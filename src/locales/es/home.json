@@ -1,0 +1,34 @@
+{
+  "hero": {
+    "title": "Descubre la Moda Modesta Elegante",
+    "subtitle": "Hijabs, abayas y ropa modesta de calidad premium para la mujer musulmana moderna",
+    "cta": "Ver Colección",
+    "ctaSecondary": "Ver Lookbook",
+    "badge": "Calidad Premium • Confianza de más de 10,000 clientes",
+    "features": {
+      "freeShipping": "Envío Gratis",
+      "secureCheckout": "Pago Seguro",
+      "satisfactionGuaranteed": "Satisfacción Garantizada"
+    }
+  },
+  "categories": {
+    "title": "Comprar por Categoría",
+    "subtitle": "Encuentra tus piezas de moda modesta perfectas"
+  },
+  "featured": {
+    "title": "Productos Destacados",
+    "subtitle": "Selecciones cuidadosamente elegidas solo para ti"
+  },
+  "testimonials": {
+    "title": "Lo Que Dicen Nuestros Clientes",
+    "subtitle": "Únete a miles de clientes satisfechos"
+  },
+  "newsletter": {
+    "title": "Mantente Actualizado",
+    "subtitle": "Obtén las últimas tendencias de moda y ofertas exclusivas",
+    "placeholder": "Ingresa tu dirección de correo",
+    "button": "Suscribirse",
+    "success": "¡Gracias por suscribirte!",
+    "error": "Por favor ingresa una dirección de correo válida"
+  }
+}
