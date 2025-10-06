@@ -79,5 +79,11 @@
   "shippingInfo": "معلومات الشحن",
   "returnPolicy": "سياسة الإرجاع",
   "sizeGuide": "دليل المقاسات",
-  "careInstructions": "تعليمات العناية"
+  "careInstructions": "تعليمات العناية",
+  "orderViaWhatsApp": "اطلب عبر واتساب",
+  "whatsAppOrder": "طلب واتساب",
+  "newOrder": "طلب جديد",
+  "orderDetails": "تفاصيل الطلب",
+  "totalAmount": "المبلغ الإجمالي",
+  "pleaseConfirm": "يرجى التأكيد وتقديم تفاصيل الشحن"
 }

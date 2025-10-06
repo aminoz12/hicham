@@ -67,7 +67,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    debug: false,
+    debug: true, // Enable debug to see what's happening
     
     // Language detection options
     detection: {
@@ -84,14 +84,21 @@ i18n
     defaultNS: 'common',
     ns: ['common', 'navigation', 'products', 'home'],
 
-    // RTL support
-    lng: 'en',
+    // RTL support - removed hardcoded lng
     supportedLngs: ['en', 'fr', 'it', 'ar', 'es'],
     
     // React options
     react: {
       useSuspense: false,
     },
+  })
+  .then(() => {
+    console.log('i18n initialized successfully');
+    console.log('Current language:', i18n.language);
+    console.log('Available languages:', i18n.languages);
+  })
+  .catch((error) => {
+    console.error('i18n initialization failed:', error);
   });
 
 export default i18n;

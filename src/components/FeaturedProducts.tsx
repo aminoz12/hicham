@@ -68,8 +68,15 @@ const FeaturedProducts: React.FC = () => {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-700"
                     />
+                    {product.images && product.images[1] && (
+                      <img
+                        src={product.images[1]}
+                        alt={product.name}
+                        className="absolute inset-0 w-full h-96 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      />
+                    )}
                     
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

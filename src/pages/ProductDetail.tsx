@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { Star, Heart, Share2, Truck, RotateCcw, Shield, Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Star, Heart, Share2, Truck, RotateCcw, MessageCircle, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { getProductById } from '@/data/products';
 import { formatPrice, calculateDiscount } from '@/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +21,7 @@ const ProductDetail: React.FC = () => {
 
   const { addItem, updateQuantity } = useCartStore();
   const { openProductModal } = useUIStore();
+  const { t } = useTranslation('home');
 
   const product = id ? getProductById(id) : null;
 
@@ -88,7 +90,7 @@ const ProductDetail: React.FC = () => {
   const features = [
     { icon: Truck, text: 'Free shipping on orders over $75' },
     { icon: RotateCcw, text: '30-day returns' },
-    { icon: Shield, text: 'Secure checkout' }
+    { icon: MessageCircle, text: t('hero.features.orderViaWhatsApp') }
   ];
 
   return (

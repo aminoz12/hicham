@@ -79,5 +79,11 @@
   "shippingInfo": "Informations de livraison",
   "returnPolicy": "Politique de retour",
   "sizeGuide": "Guide des tailles",
-  "careInstructions": "Instructions d'entretien"
+  "careInstructions": "Instructions d'entretien",
+  "orderViaWhatsApp": "Commander via WhatsApp",
+  "whatsAppOrder": "Commande WhatsApp",
+  "newOrder": "Nouvelle Commande",
+  "orderDetails": "Détails de la Commande",
+  "totalAmount": "Montant Total",
+  "pleaseConfirm": "Veuillez confirmer et fournir les détails de livraison"
 }

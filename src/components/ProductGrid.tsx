@@ -73,12 +73,19 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode }) => {
               <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <div className="flex">
                   {/* Image */}
-                  <div className="w-48 h-48 flex-shrink-0">
+                  <div className="w-72 h-72 flex-shrink-0 relative overflow-hidden">
                     <img
                       src={product.images[0]}
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
+                    {product.images[1] && (
+                      <img
+                        src={product.images[1]}
+                        alt={product.name}
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      />
+                    )}
                   </div>
 
                   {/* Content */}
@@ -183,8 +190,15 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode }) => {
                 <img
                   src={product.images[0]}
                   alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-700"
                 />
+                {product.images[1] && (
+                  <img
+                    src={product.images[1]}
+                    alt={product.name}
+                    className="absolute inset-0 w-full h-96 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  />
+                )}
                 
                 {/* Overlay */}
                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

@@ -1,13 +1,13 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Play, Star, Shield, Truck, Heart } from 'lucide-react';
+import { ArrowRight, Play, Star, MessageCircle, Truck, Heart } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation('home');
+  const { t, getCurrentLanguage } = useTranslation('home');
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true
@@ -28,7 +28,7 @@ const Hero: React.FC = () => {
 
   const features = [
     { icon: Truck, text: t('hero.features.freeShipping') },
-    { icon: Shield, text: t('hero.features.secureCheckout') },
+    { icon: MessageCircle, text: t('hero.features.orderViaWhatsApp') },
     { icon: Heart, text: t('hero.features.satisfactionGuaranteed') }
   ];
 
@@ -56,6 +56,11 @@ const Hero: React.FC = () => {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="text-center lg:text-left"
           >
+            {/* Debug Info */}
+            <div className="text-xs text-gray-500 mb-2">
+              Current Language: {getCurrentLanguage()} | Translation: {t('hero.badge')}
+            </div>
+
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

@@ -47,8 +47,8 @@ const LanguageSwitcher: React.FC = () => {
     document.documentElement.dir = language.dir;
     document.documentElement.lang = language.code;
     
-    // Store language preference
-    localStorage.setItem('selected-language', JSON.stringify(language));
+    // Store language preference in the format i18next expects
+    localStorage.setItem('i18nextLng', language.code);
   };
 
   return (

@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { useTranslation } from '@/hooks/useTranslation';
 import { 
   Truck, 
-  Shield, 
+  MessageCircle, 
   Heart, 
   RotateCcw, 
   Headphones, 
@@ -17,6 +18,7 @@ const Features: React.FC = () => {
     threshold: 0.1,
     triggerOnce: true
   });
+  const { t } = useTranslation('home');
 
   const features = [
     {
@@ -26,9 +28,9 @@ const Features: React.FC = () => {
       color: 'from-blue-500 to-blue-600'
     },
     {
-      icon: Shield,
-      title: 'Secure Checkout',
-      description: 'Your payment information is encrypted and secure.',
+      icon: MessageCircle,
+      title: t('hero.features.orderViaWhatsApp'),
+      description: 'Easy ordering through WhatsApp. Quick and convenient.',
       color: 'from-green-500 to-green-600'
     },
     {
