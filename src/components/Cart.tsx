@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle } from 'lucide-react';
+import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
