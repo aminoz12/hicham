@@ -41,11 +41,11 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   const sizes = [...new Set(products.flatMap(p => p.sizes))];
 
   const priceRanges = [
-    { label: 'Under $25', value: [0, 25] as [number, number] },
-    { label: '$25 - $50', value: [25, 50] as [number, number] },
-    { label: '$50 - $100', value: [50, 100] as [number, number] },
-    { label: '$100 - $150', value: [100, 150] as [number, number] },
-    { label: 'Over $150', value: [150, 1000] as [number, number] }
+    { label: 'Under €15', value: [0, 15] as [number, number] },
+    { label: '€15 - €25', value: [15, 25] as [number, number] },
+    { label: '€25 - €40', value: [25, 40] as [number, number] },
+    { label: '€40 - €50', value: [40, 50] as [number, number] },
+    { label: 'Over €50', value: [50, 1000] as [number, number] }
   ];
 
   const handlePriceRangeChange = (range: [number, number]) => {

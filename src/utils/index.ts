@@ -1,7 +1,7 @@
 import { Product, FilterOptions } from '@/types';
 
-export const formatPrice = (price: number, currency: string = 'CAD'): string => {
-  return new Intl.NumberFormat('en-CA', {
+export const formatPrice = (price: number, currency: string = 'EUR'): string => {
+  return new Intl.NumberFormat('en-EU', {
     style: 'currency',
     currency: currency,
   }).format(price);
@@ -9,6 +9,24 @@ export const formatPrice = (price: number, currency: string = 'CAD'): string => 
 
 export const calculateDiscount = (originalPrice: number, salePrice: number): number => {
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+};
+
+export const calculateItemPrice = (product: any, quantity: number): number => {
+  // Special pricing for hijabs: 13 euro for 1, 25 euro for 2
+  if (product.category === 'hijabs') {
+    if (quantity >= 2) {
+      // For 2 or more hijabs, use 25 euro for every 2 hijabs, then 13 euro for remaining
+      const pairs = Math.floor(quantity / 2);
+      const remaining = quantity % 2;
+      return (pairs * 25) + (remaining * 13);
+    } else {
+      // For 1 hijab, use 13 euro
+      return quantity * 13;
+    }
+  } else {
+    // For other products (abayas), use regular pricing
+    return product.price * quantity;
+  }
 };
 
 export const formatDate = (date: string | Date): string => {

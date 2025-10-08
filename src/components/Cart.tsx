@@ -4,7 +4,7 @@ import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle, ArrowRight } from '
 import { Link } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
-import { formatPrice } from '@/utils';
+import { formatPrice, calculateItemPrice } from '@/utils';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -162,7 +162,7 @@ const Cart: React.FC = () => {
                         {item.selectedColor} • {item.selectedSize}
                       </p>
                       <p className="text-sm font-semibold text-primary-600">
-                        {formatPrice(item.product.price)}
+                        {formatPrice(calculateItemPrice(item.product, item.quantity))}
                       </p>
                     </div>
 

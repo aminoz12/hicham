@@ -195,6 +195,25 @@ const ProductDetail: React.FC = () => {
               )}
             </div>
 
+            {/* Special pricing note for hijabs */}
+            {product.category === 'hijabs' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-start space-x-3">
+                  <div className="flex-shrink-0">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 text-sm font-bold">!</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-blue-900 mb-1">Special Pricing</h4>
+                    <p className="text-sm text-blue-700">
+                      Buy 1 hijab for €13 or 2 hijabs for €25. Mix and match any hijabs!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Description */}
             <p className="text-gray-600 leading-relaxed">{product.description}</p>
 

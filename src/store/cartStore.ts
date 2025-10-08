@@ -52,7 +52,7 @@ export const useCartStore = create<CartStore>()(
         // Recalculate totals
         const newItems = get().items;
         const itemCount = newItems.reduce((sum, item) => sum + item.quantity, 0);
-        const total = newItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+        const total = get().getTotal();
 
         set({ itemCount, total });
       },
@@ -65,7 +65,7 @@ export const useCartStore = create<CartStore>()(
         // Recalculate totals
         const newItems = get().items;
         const itemCount = newItems.reduce((sum, item) => sum + item.quantity, 0);
-        const total = newItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+        const total = get().getTotal();
 
         set({ itemCount, total });
       },
@@ -85,7 +85,7 @@ export const useCartStore = create<CartStore>()(
         // Recalculate totals
         const newItems = get().items;
         const itemCount = newItems.reduce((sum, item) => sum + item.quantity, 0);
-        const total = newItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+        const total = get().getTotal();
 
         set({ itemCount, total });
       },
@@ -99,7 +99,23 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotal: () => {
-        return get().items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+        return get().items.reduce((sum, item) => {
+          // Special pricing for hijabs: 13 euro for 1, 25 euro for 2
+          if (item.product.category === 'hijabs') {
+            if (item.quantity >= 2) {
+              // For 2 or more hijabs, use 25 euro for every 2 hijabs, then 13 euro for remaining
+              const pairs = Math.floor(item.quantity / 2);
+              const remaining = item.quantity % 2;
+              return sum + (pairs * 25) + (remaining * 13);
+            } else {
+              // For 1 hijab, use 13 euro
+              return sum + (item.quantity * 13);
+            }
+          } else {
+            // For other products (abayas), use regular pricing
+            return sum + (item.product.price * item.quantity);
+          }
+        }, 0);
       },
 
       isInCart: (productId) => {
