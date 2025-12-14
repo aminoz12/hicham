@@ -16,10 +16,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode: _viewMode
   // Get grid columns class based on columns prop
   const getGridCols = () => {
     switch (columns) {
-      case 2: return 'grid-cols-1 sm:grid-cols-2';
-      case 3: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
-      case 4: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
-      default: return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+      case 2: return 'grid-cols-2 sm:grid-cols-2';
+      case 3: return 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3';
+      case 4: return 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+      default: return 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
     }
   };
 
@@ -54,7 +54,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode: _viewMode
                 src={product.image}
                 alt={product.name}
                 loading="lazy"
-                className="w-full h-[400px] sm:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
+                className="w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
               />
               {product.images && product.images[1] && (
                 <img

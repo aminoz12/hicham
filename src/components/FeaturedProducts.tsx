@@ -36,7 +36,7 @@ const FeaturedProducts: React.FC = () => {
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
           {featuredProducts.map((product, index) => (
             <motion.div
               key={product.id}
@@ -56,7 +56,7 @@ const FeaturedProducts: React.FC = () => {
                     src={product.image}
                     alt={product.name}
                     loading="lazy"
-                    className="w-full h-[400px] sm:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
+                    className="w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
                   />
                   {product.images && product.images[1] && (
                     <img
