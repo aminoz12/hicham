@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
@@ -61,22 +61,6 @@ const Hero: React.FC = () => {
         <div className="absolute inset-0 bg-black/30" />
       </motion.div>
 
-      {/* Centered Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8 }}
-        className="absolute top-8 left-1/2 transform -translate-x-1/2 z-30"
-      >
-        <Link to="/" className="flex items-center">
-          <img
-            src="/logo.png"
-            alt="Hijabi Inoor Logo"
-            className="h-8 lg:h-10 w-auto object-contain"
-          />
-        </Link>
-      </motion.div>
-
       {/* Text Overlay - Lower Left */}
       <motion.div
         ref={ref}
@@ -85,15 +69,50 @@ const Hero: React.FC = () => {
         transition={{ duration: 0.8, delay: 0.3 }}
         className="absolute bottom-20 left-8 lg:left-16 z-30 text-white"
       >
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-          {t('hero.title')}
-        </h1>
-        <Link
-          to="/products"
-          className="text-lg sm:text-xl font-medium underline hover:no-underline transition-all inline-block"
+        <motion.h1 
+          className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light mb-8 tracking-wide leading-tight"
+          style={{
+            fontFamily: "'Playfair Display', serif",
+            letterSpacing: '0.05em',
+            textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
+          }}
         >
-          {t('hero.cta')}
-        </Link>
+          <span className="block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+            {t('hero.title')}
+          </span>
+        </motion.h1>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={inView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <Link
+            to="/products"
+            className="group relative inline-flex items-center justify-center px-8 py-4 text-base sm:text-lg font-semibold tracking-wider uppercase transition-all duration-300 overflow-hidden"
+          >
+            {/* Button Background */}
+            <span className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/10 to-white/20 backdrop-blur-sm border border-white/30 rounded-sm"></span>
+            
+            {/* Hover Effect */}
+            <span className="absolute inset-0 bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+            
+            {/* Button Text */}
+            <span className="relative z-10 text-white flex items-center space-x-2">
+              <span>{t('hero.cta')}</span>
+              <motion.svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                initial={{ x: 0 }}
+                whileHover={{ x: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </motion.svg>
+            </span>
+          </Link>
+        </motion.div>
       </motion.div>
 
       {/* Chat/Support Icon - Bottom Right */}

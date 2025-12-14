@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Search, 
   Menu, 
-  Heart, 
-  User,
   ChevronDown,
   ShoppingCart
 } from 'lucide-react';
@@ -17,17 +14,13 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   
   const location = useLocation();
   const { itemCount } = useCartStore();
   const { t } = useTranslation('navigation');
   const { 
     toggleMobileMenu, 
-    toggleCart, 
-    toggleSearch,
-    setSearchQuery: setGlobalSearchQuery 
+    toggleCart
   } = useUIStore();
 
   // Handle scroll effect
@@ -39,15 +32,6 @@ const Header: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Handle search
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setGlobalSearchQuery(searchQuery);
-      toggleSearch();
-    }
-  };
 
   // Navigation items
   const navigationItems = [
@@ -178,27 +162,8 @@ const Header: React.FC = () => {
             {/* Right Side Actions */}
             <div className="flex items-center space-x-4">
               
-              {/* Search */}
-              <button
-                onClick={toggleSearch}
-                className="p-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-                aria-label="Search"
-              >
-                <span className="hidden lg:inline">{t('searchPlaceholder', { ns: 'common' })}</span>
-                <Search className="h-5 w-5 lg:hidden" />
-              </button>
-
               {/* Language Switcher */}
               <LanguageSwitcher />
-
-              {/* Account */}
-              <button
-                className="p-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-                aria-label="User account"
-              >
-                <span className="hidden lg:inline">Account</span>
-                <User className="h-5 w-5 lg:hidden" />
-              </button>
 
               {/* Cart */}
               <button
