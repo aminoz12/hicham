@@ -37,12 +37,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   // const subcategories = [...new Set(products.map(p => p.subcategory).filter(Boolean))];
   const colors = [...new Set(products.flatMap(p => p.colors))];
   const sizes = [...new Set(products.flatMap(p => p.sizes))];
-    { label: 'Under €15', value: [0, 15] as [number, number] },
-    { label: '€15 - €25', value: [15, 25] as [number, number] },
-    { label: '€25 - €40', value: [25, 40] as [number, number] },
-    { label: '€40 - €50', value: [40, 50] as [number, number] },
-    { label: 'Over €50', value: [50, 1000] as [number, number] }
-  ];
 
   const handlePriceRangeChange = (range: [number, number]) => {
     onFilterChange({ priceRange: range });
@@ -62,10 +56,6 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
       ? currentSizes.filter(s => s !== size)
       : [...currentSizes, size];
     onFilterChange({ sizes: newSizes.length > 0 ? newSizes : undefined });
-  };
-
-  const _handleRatingChange = (rating: number) => {
-    onFilterChange({ rating: filters.rating === rating ? undefined : rating });
   };
 
   return (

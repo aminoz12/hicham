@@ -11,7 +11,7 @@ const Products: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [filters, setFilters] = useState<FilterOptions>({});
-  const [sortBy, setSortBy] = useState<string>('featured');
+  const [sortBy] = useState<string>('featured');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
