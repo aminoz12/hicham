@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
-import { Star, Heart, ShoppingCart, Eye, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { getFeaturedProducts } from '@/data/products';
 import { formatPrice, calculateDiscount } from '@/utils';
 import { useCartStore } from '@/store/cartStore';
@@ -40,176 +40,76 @@ const FeaturedProducts: React.FC = () => {
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          transition={{ duration: 0.6 }}
+          className="mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Featured Products
+          <h2 className="text-2xl sm:text-3xl font-serif text-[#0B0B0D] mb-2 tracking-tight">
+            Curated Selection
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover our most loved pieces, carefully selected for their quality, style, and customer satisfaction.
-          </p>
+          <Link 
+            to="/products" 
+            className="text-sm text-gray-600 hover:text-black transition-colors inline-block"
+          >
+            View all →
+          </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
           {featuredProducts.map((product, index) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -8 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               className="group"
             >
               <Link to={`/product/${product.id}`} className="block">
-                <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden">
-                  {/* Image Container */}
-                  <div className="relative overflow-hidden">
+                {/* Image Container */}
+                <div className="relative overflow-hidden mb-4 bg-gray-50">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-[400px] sm:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
+                  />
+                  {product.images && product.images[1] && (
                     <img
-                      src={product.image}
+                      src={product.images[1]}
                       alt={product.name}
-                      className="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
-                    {product.images && product.images[1] && (
-                      <img
-                        src={product.images[1]}
-                        alt={product.name}
-                        className="absolute inset-0 w-full h-96 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                      />
-                    )}
-                    
-                    {/* Overlay */}
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
-                    {/* Badges */}
-                    <div className="absolute top-4 left-4 flex flex-col space-y-2">
-                      {product.isOnSale && product.originalPrice && (
-                        <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          -{calculateDiscount(product.originalPrice, product.price)}%
-                        </div>
-                      )}
-                      {product.isNew && (
-                        <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          New
-                        </div>
-                      )}
-                      {product.isBestSeller && (
-                        <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
-                          Best Seller
-                        </div>
-                      )}
+                  )}
+                  
+                  {/* Minimal Badge - Only on Sale */}
+                  {product.isOnSale && product.originalPrice && (
+                    <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-medium">
+                      -{calculateDiscount(product.originalPrice, product.price)}%
                     </div>
+                  )}
+                </div>
 
-                    {/* Action Buttons */}
-                    <div className="absolute top-4 right-4 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                      <button
-                        onClick={(e) => handleQuickView(e, product)}
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors"
-                        aria-label="Quick view"
-                      >
-                        <Eye className="h-4 w-4 text-gray-700" />
-                      </button>
-                      <button
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors"
-                        aria-label="Add to wishlist"
-                      >
-                        <Heart className="h-4 w-4 text-gray-700" />
-                      </button>
-                    </div>
-
-                    {/* Add to Cart Button */}
-                    <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                      <button
-                        onClick={(e) => handleAddToCart(e, product)}
-                        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center space-x-2"
-                      >
-                        <ShoppingCart className="h-4 w-4" />
-                        <span>Add to Cart</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-6">
-                    {/* Category */}
-                    <div className="text-xs text-primary-600 font-semibold uppercase tracking-wide mb-2">
-                      {product.category}
-                    </div>
-
-                    {/* Name */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
-                      {product.name}
-                    </h3>
-
-                    {/* Rating */}
-                    <div className="flex items-center space-x-1 mb-3">
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className={`h-4 w-4 ${
-                              star <= Math.floor(product.rating)
-                                ? 'text-yellow-400 fill-current'
-                                : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-600">({product.reviewCount})</span>
-                    </div>
-
-                    {/* Price */}
-                    <div className="flex items-center space-x-2 mb-4">
-                      <span className="text-xl font-bold text-gray-900">
-                        {formatPrice(product.price)}
+                {/* Content - Minimal */}
+                <div>
+                  {/* Product Name */}
+                  <h3 className="text-base font-medium text-[#0B0B0D] mb-1 group-hover:opacity-70 transition-opacity">
+                    {product.name}
+                  </h3>
+                  
+                  {/* Price */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-base text-[#0B0B0D]">
+                      {formatPrice(product.price)}
+                    </span>
+                    {product.originalPrice && (
+                      <span className="text-sm text-gray-500 line-through">
+                        {formatPrice(product.originalPrice)}
                       </span>
-                      {product.originalPrice && (
-                        <span className="text-sm text-gray-500 line-through">
-                          {formatPrice(product.originalPrice)}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Colors */}
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">Colors:</span>
-                      <div className="flex space-x-1">
-                        {product.colors.slice(0, 3).map((color, index) => (
-                          <div
-                            key={index}
-                            className="w-4 h-4 rounded-full border-2 border-gray-200"
-                            style={{ backgroundColor: getColorValue(color) }}
-                          />
-                        ))}
-                        {product.colors.length > 3 && (
-                          <span className="text-xs text-gray-500">
-                            +{product.colors.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </Link>
             </motion.div>
           ))}
         </div>
-
-        {/* View All Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-center mt-12"
-        >
-          <Link
-            to="/products"
-            className="btn-primary inline-flex items-center space-x-2 group"
-          >
-            <span>View All Products</span>
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </motion.div>
       </div>
     </section>
   );

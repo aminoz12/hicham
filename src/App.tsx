@@ -53,7 +53,7 @@ function App() {
   }, [isCartOpen, isMobileMenuOpen, isSearchOpen, isNewsletterModalOpen]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-secondary-50">
+    <div className="min-h-screen bg-white">
       <Helmet>
         <title>Hijabi Inoor - Premium Modest Fashion</title>
         <meta name="description" content="Discover elegant abayas and hijabs designed for the modern Muslim woman. Premium quality, beautiful designs, and exceptional comfort." />

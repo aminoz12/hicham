@@ -126,6 +126,21 @@ export const sortProducts = (products: Product[], sortBy: string): Product[] => 
   const sorted = [...products];
   
   switch (sortBy) {
+    case 'featured':
+      // Featured products first (best sellers, new arrivals)
+      return sorted.sort((a, b) => {
+        if (a.isBestSeller && !b.isBestSeller) return -1;
+        if (!a.isBestSeller && b.isBestSeller) return 1;
+        if (a.isNew && !b.isNew) return -1;
+        if (!a.isNew && b.isNew) return 1;
+        return 0;
+      });
+    case 'popular':
+      return sorted.sort((a, b) => b.reviewCount - a.reviewCount);
+    case 'alphabetical-az':
+      return sorted.sort((a, b) => a.name.localeCompare(b.name));
+    case 'alphabetical-za':
+      return sorted.sort((a, b) => b.name.localeCompare(a.name));
     case 'price-low':
       return sorted.sort((a, b) => a.price - b.price);
     case 'price-high':
@@ -136,10 +151,12 @@ export const sortProducts = (products: Product[], sortBy: string): Product[] => 
         if (!a.isNew && b.isNew) return 1;
         return 0;
       });
-    case 'rating':
-      return sorted.sort((a, b) => b.rating - a.rating);
-    case 'popular':
-      return sorted.sort((a, b) => b.reviewCount - a.reviewCount);
+    case 'oldest':
+      return sorted.sort((a, b) => {
+        if (a.isNew && !b.isNew) return 1;
+        if (!a.isNew && b.isNew) return -1;
+        return 0;
+      });
     default:
       return sorted;
   }

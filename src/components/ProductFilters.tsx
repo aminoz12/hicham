@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Search, X, Filter, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { FilterOptions } from '@/types';
 import { products } from '@/data/products';
 
@@ -22,12 +21,12 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   activeFiltersCount
 }) => {
   const [isExpanded, setIsExpanded] = useState({
-    search: true,
-    category: true,
+    search: false,
+    category: false,
     price: true,
     color: true,
     size: true,
-    rating: true
+    rating: false
   });
 
   const toggleSection = (section: keyof typeof isExpanded) => {
@@ -73,255 +72,93 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <Filter className="h-5 w-5 mr-2" />
-          Filters
-        </h3>
-        {activeFiltersCount > 0 && (
-          <button
-            onClick={onClearFilters}
-            className="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center"
-          >
-            <X className="h-4 w-4 mr-1" />
-            Clear all
-          </button>
-        )}
-      </div>
-
+    <div className="bg-white sticky top-8">
       <div className="space-y-6">
-        {/* Search */}
-        <div>
-          <button
-            onClick={() => toggleSection('search')}
-            className="flex items-center justify-between w-full text-left font-medium text-gray-900 mb-3"
-          >
-            <span>Search</span>
-            {isExpanded.search ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          {isExpanded.search && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="relative"
-            >
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-            </motion.div>
-          )}
-        </div>
 
-        {/* Category */}
-        <div>
-          <button
-            onClick={() => toggleSection('category')}
-            className="flex items-center justify-between w-full text-left font-medium text-gray-900 mb-3"
-          >
-            <span>Category</span>
-            {isExpanded.category ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          {isExpanded.category && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2"
-            >
-              <button
-                onClick={() => onFilterChange({ category: undefined })}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  !filters.category
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'hover:bg-gray-100'
-                }`}
-              >
-                All Categories
-              </button>
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => onFilterChange({ category: category as any })}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors capitalize ${
-                    filters.category === category
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'hover:bg-gray-100'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </div>
-
-        {/* Price Range */}
+        {/* Price Range - Minimal */}
         <div>
           <button
             onClick={() => toggleSection('price')}
-            className="flex items-center justify-between w-full text-left font-medium text-gray-900 mb-3"
+            className="flex items-center justify-between w-full text-left text-sm font-medium text-black mb-3"
           >
-            <span>Price Range</span>
+            <span>Price</span>
             {isExpanded.price ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </button>
           {isExpanded.price && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2"
-            >
-              {priceRanges.map((range) => (
-                <button
-                  key={range.label}
-                  onClick={() => handlePriceRangeChange(range.value)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                    JSON.stringify(filters.priceRange) === JSON.stringify(range.value)
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'hover:bg-gray-100'
-                  }`}
-                >
-                  {range.label}
-                </button>
-              ))}
-            </motion.div>
+            <div className="space-y-2">
+              <div className="text-sm text-black mb-2">
+                €{filters.priceRange?.[0] || 0} - €{filters.priceRange?.[1] || 12900}
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="12900"
+                value={filters.priceRange?.[1] || 12900}
+                onChange={(e) => handlePriceRangeChange([filters.priceRange?.[0] || 0, parseInt(e.target.value)] as [number, number])}
+                className="w-full"
+              />
+            </div>
           )}
         </div>
 
-        {/* Colors */}
+        {/* Colors - Minimal like Merrachi */}
         <div>
           <button
             onClick={() => toggleSection('color')}
-            className="flex items-center justify-between w-full text-left font-medium text-gray-900 mb-3"
+            className="flex items-center justify-between w-full text-left text-sm font-medium text-black mb-3"
           >
-            <span>Colors</span>
+            <span>Color</span>
             {isExpanded.color ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </button>
           {isExpanded.color && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2"
-            >
+            <div className="space-y-2">
               {colors.slice(0, 10).map((color) => (
                 <button
                   key={color}
                   onClick={() => handleColorChange(color)}
-                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`w-full flex items-center space-x-2 text-sm transition-colors ${
                     filters.colors?.includes(color)
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'hover:bg-gray-100'
+                      ? 'text-black font-medium'
+                      : 'text-gray-600 hover:text-black'
                   }`}
                 >
                   <div
-                    className="w-4 h-4 rounded-full border border-gray-300"
+                    className="w-4 h-4 border border-gray-300"
                     style={{ backgroundColor: getColorValue(color) }}
                   />
-                  <span>{color}</span>
+                  <span className="lowercase">{color.toLowerCase()}</span>
                 </button>
               ))}
-            </motion.div>
+            </div>
           )}
         </div>
 
-        {/* Sizes */}
+        {/* Sizes - Minimal like Merrachi */}
         <div>
           <button
             onClick={() => toggleSection('size')}
-            className="flex items-center justify-between w-full text-left font-medium text-gray-900 mb-3"
+            className="flex items-center justify-between w-full text-left text-sm font-medium text-black mb-3"
           >
-            <span>Sizes</span>
+            <span>Size</span>
             {isExpanded.size ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </button>
           {isExpanded.size && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="grid grid-cols-3 gap-2"
-            >
+            <div className="flex flex-wrap gap-2">
               {sizes.map((size) => (
                 <button
                   key={size}
                   onClick={() => handleSizeChange(size)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-3 py-1 text-sm border transition-colors ${
                     filters.sizes?.includes(size)
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'bg-gray-100 hover:bg-gray-200'
+                      ? 'border-black text-black'
+                      : 'border-gray-300 text-gray-600 hover:border-gray-400'
                   }`}
                 >
                   {size}
                 </button>
               ))}
-            </motion.div>
+            </div>
           )}
-        </div>
-
-        {/* Rating */}
-        <div>
-          <button
-            onClick={() => toggleSection('rating')}
-            className="flex items-center justify-between w-full text-left font-medium text-gray-900 mb-3"
-          >
-            <span>Rating</span>
-            {isExpanded.rating ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          {isExpanded.rating && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-2"
-            >
-              {[4, 3, 2, 1].map((rating) => (
-                <button
-                  key={rating}
-                  onClick={() => handleRatingChange(rating)}
-                  className={`w-full flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    filters.rating === rating
-                      ? 'bg-primary-100 text-primary-700'
-                      : 'hover:bg-gray-100'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <div
-                        key={star}
-                        className={`h-3 w-3 ${
-                          star <= rating ? 'text-yellow-400' : 'text-gray-300'
-                        }`}
-                      >
-                        ★
-                      </div>
-                    ))}
-                  </div>
-                  <span>& Up</span>
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </div>
-
-        {/* Stock Status */}
-        <div>
-          <label className="flex items-center space-x-3">
-            <input
-              type="checkbox"
-              checked={filters.inStock || false}
-              onChange={(e) => onFilterChange({ inStock: e.target.checked || undefined })}
-              className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-            />
-            <span className="text-sm text-gray-700">In Stock Only</span>
-          </label>
         </div>
       </div>
     </div>

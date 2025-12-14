@@ -26,45 +26,45 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary-300 rounded-full;
+    @apply bg-gray-400 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary-400;
+    @apply bg-gray-600;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-out;
+    @apply bg-[#0B0B0D] text-white font-medium py-3 px-8 hover:bg-[#1a1a1c] transition-colors duration-200 ease-out uppercase tracking-wide text-sm;
   }
 
   .btn-secondary {
-    @apply bg-white text-primary-700 border-2 border-primary-200 hover:border-primary-300 hover:bg-primary-50 font-semibold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 ease-out;
+    @apply bg-white text-[#0B0B0D] border border-[#0B0B0D] hover:bg-[#0B0B0D] hover:text-white font-medium py-3 px-8 transition-all duration-200 ease-out uppercase tracking-wide text-sm;
   }
 
   .btn-ghost {
-    @apply text-primary-700 hover:text-primary-800 hover:bg-primary-50 font-medium py-2 px-4 rounded-lg transition-all duration-200 ease-out;
+    @apply text-black hover:text-primary-700 font-medium py-2 px-4 transition-colors duration-200 ease-out;
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out;
+    @apply bg-white transition-all duration-200 ease-out;
   }
 
   .card-hover {
-    @apply transform hover:scale-105 hover:-translate-y-2 transition-all duration-300 ease-out;
+    @apply transition-opacity duration-200 ease-out hover:opacity-90;
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+    @apply text-black;
   }
 
   .bg-gradient-primary {
-    @apply bg-gradient-to-br from-primary-50 via-white to-secondary-50;
+    @apply bg-white;
   }
 
   .bg-gradient-secondary {
-    @apply bg-gradient-to-br from-secondary-50 via-white to-primary-50;
+    @apply bg-gray-50;
   }
 
   .glass {
@@ -223,7 +223,7 @@
 
 /* Text selection */
 ::selection {
-  @apply bg-primary-200 text-primary-900;
+  @apply bg-[#0B0B0D] text-white;
 }
 
 /* Smooth transitions for all interactive elements */
