@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ProductGrid from '@/components/ProductGrid';
 import FilterModal from '@/components/FilterModal';
-import ProductSort from '@/components/ProductSort';
 import { products } from '@/data/products';
 import { filterProducts, sortProducts, searchProducts } from '@/utils';
 import { Product, FilterOptions } from '@/types';
@@ -14,7 +13,7 @@ const Products: React.FC = () => {
   const [filters, setFilters] = useState<FilterOptions>({});
   const [sortBy, setSortBy] = useState<string>('featured');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode] = useState<'grid' | 'list'>('grid');
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -59,9 +58,6 @@ const Products: React.FC = () => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  const handleSortChange = (newSortBy: string) => {
-    setSortBy(newSortBy);
-  };
 
   const handleSearchChange = (query: string) => {
     setSearchQuery(query);

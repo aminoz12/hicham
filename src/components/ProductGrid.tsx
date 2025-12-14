@@ -10,7 +10,7 @@ interface ProductGridProps {
   columns?: 2 | 3 | 4;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode, columns = 4 }) => {
+const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode: _viewMode, columns = 4 }) => {
   const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
 
   // Get grid columns class based on columns prop

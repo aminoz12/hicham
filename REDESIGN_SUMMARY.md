@@ -200,3 +200,4 @@ The frontend now matches Merrachi's clean, minimalist, editorial aesthetic while
 
 **Redesign completed successfully!** 🎨
 
+

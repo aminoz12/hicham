@@ -15,10 +15,10 @@ interface ProductFiltersProps {
 const ProductFilters: React.FC<ProductFiltersProps> = ({
   filters,
   onFilterChange,
-  onSearchChange,
-  searchQuery,
-  onClearFilters,
-  activeFiltersCount
+  onSearchChange: _onSearchChange,
+  searchQuery: _searchQuery,
+  onClearFilters: _onClearFilters,
+  activeFiltersCount: _activeFiltersCount
 }) => {
   const [isExpanded, setIsExpanded] = useState({
     search: false,
@@ -34,12 +34,9 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
   };
 
   // Get unique values for filters
-  const categories = [...new Set(products.map(p => p.category))];
   // const subcategories = [...new Set(products.map(p => p.subcategory).filter(Boolean))];
   const colors = [...new Set(products.flatMap(p => p.colors))];
   const sizes = [...new Set(products.flatMap(p => p.sizes))];
-
-  const priceRanges = [
     { label: 'Under €15', value: [0, 15] as [number, number] },
     { label: '€15 - €25', value: [15, 25] as [number, number] },
     { label: '€25 - €40', value: [25, 40] as [number, number] },
@@ -67,7 +64,7 @@ const ProductFilters: React.FC<ProductFiltersProps> = ({
     onFilterChange({ sizes: newSizes.length > 0 ? newSizes : undefined });
   };
 
-  const handleRatingChange = (rating: number) => {
+  const _handleRatingChange = (rating: number) => {
     onFilterChange({ rating: filters.rating === rating ? undefined : rating });
   };
 

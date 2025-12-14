@@ -21,8 +21,6 @@ const ProductSort: React.FC<ProductSortProps> = ({ sortBy, onSortChange }) => {
     { value: 'oldest', label: 'Date, old to new' }
   ];
 
-  const currentOption = sortOptions.find(option => option.value === sortBy) || sortOptions[0];
-
   return (
     <div className="relative">
       <button

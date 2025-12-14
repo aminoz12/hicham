@@ -18,8 +18,8 @@ interface FilterModalProps {
 const FilterModal: React.FC<FilterModalProps> = ({
   filters,
   onFilterChange,
-  onSearchChange,
-  searchQuery,
+  onSearchChange: _onSearchChange,
+  searchQuery: _searchQuery,
   onClearFilters,
   activeFiltersCount,
   isOpen,
