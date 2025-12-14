@@ -6,6 +6,7 @@ import { useUIStore } from '@/store/uiStore';
 import { searchProducts } from '@/utils';
 import { products } from '@/data/products';
 import { formatPrice } from '@/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const SearchModal: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -14,6 +15,7 @@ const SearchModal: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   
   const { toggleSearch } = useUIStore();
+  const { t } = useTranslation('common');
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input on mount
@@ -133,25 +135,29 @@ const SearchModal: React.FC = () => {
               {isSearching ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-                  <span className="ml-3 text-gray-600">Searching...</span>
+                  <span className="ml-3 text-gray-600">{t('searching')}</span>
                 </div>
               ) : searchResults.length > 0 ? (
                 <div className="space-y-4">
                   <h3 className="text-sm font-semibold text-gray-900">
-                    Search Results ({searchResults.length})
+                    {t('searchResults')} ({searchResults.length})
                   </h3>
                   <div className="grid gap-3">
                     {searchResults.map((product) => (
                       <Link
                         key={product.id}
                         to={`/product/${product.id}`}
-                        onClick={toggleSearch}
+                        onClick={() => {
+                          toggleSearch();
+                          window.scrollTo({ top: 0, behavior: 'instant' });
+                        }}
                         className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
                           <img
                             src={product.images[0]}
                             alt={product.name}
+                            loading="lazy"
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -184,10 +190,13 @@ const SearchModal: React.FC = () => {
                   {searchResults.length >= 8 && (
                     <Link
                       to={`/products?search=${encodeURIComponent(query)}`}
-                      onClick={toggleSearch}
+                      onClick={() => {
+                        toggleSearch();
+                        window.scrollTo({ top: 0, behavior: 'instant' });
+                      }}
                       className="block w-full text-center py-3 text-primary-600 hover:text-primary-700 font-medium border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
                     >
-                      View all results for "{query}"
+                      {t('viewAllResults')} "{query}"
                     </Link>
                   )}
                 </div>
@@ -195,10 +204,10 @@ const SearchModal: React.FC = () => {
                 <div className="text-center py-8">
                   <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    No results found
+                    {t('noResultsFound')}
                   </h3>
                   <p className="text-gray-500">
-                    Try searching with different keywords
+                    {t('tryDifferentKeywords')}
                   </p>
                 </div>
               )}
@@ -213,13 +222,13 @@ const SearchModal: React.FC = () => {
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-sm font-semibold text-gray-900 flex items-center">
                       <Clock className="h-4 w-4 mr-2" />
-                      Recent Searches
+                      {t('recentSearches')}
                     </h3>
                     <button
                       onClick={clearRecentSearches}
                       className="text-xs text-gray-500 hover:text-gray-700"
                     >
-                      Clear
+                      {t('clear')}
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -240,7 +249,7 @@ const SearchModal: React.FC = () => {
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 flex items-center mb-3">
                   <TrendingUp className="h-4 w-4 mr-2" />
-                  Popular Searches
+                  {t('popularSearches')}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {popularSearches.map((search, index) => (
@@ -258,7 +267,7 @@ const SearchModal: React.FC = () => {
               {/* Quick Categories */}
               <div>
                 <h3 className="text-sm font-semibold text-gray-900 mb-3">
-                  Browse Categories
+                  {t('browseCategories')}
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {[

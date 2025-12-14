@@ -17,7 +17,13 @@
   },
   "featured": {
     "title": "Produits en Vedette",
-    "subtitle": "Sélections soigneusement choisies rien que pour vous"
+    "subtitle": "Sélections soigneusement choisies rien que pour vous",
+    "curatedSelection": "Sélection Curatée",
+    "viewAll": "Voir tout"
+  },
+  "categories": {
+    "shopByCategory": "Acheter par Catégorie",
+    "items": "articles"
   },
   "testimonials": {
     "title": "Ce Que Disent Nos Clients",

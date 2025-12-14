@@ -72,6 +72,26 @@
   "wishlistEmpty": "Votre liste de souhaits est vide",
   "itemAddedToWishlist": "Article ajouté à la liste de souhaits",
   "itemRemovedFromWishlist": "Article retiré de la liste de souhaits",
-  "wishlistUpdated": "Liste de souhaits mise à jour"
+  "wishlistUpdated": "Liste de souhaits mise à jour",
+  "productNotFound": "Produit introuvable",
+  "backToProducts": "Retour aux Produits",
+  "addToCart": "Ajouter au Panier",
+  "addedToCart": "ajouté au panier",
+  "addedToWishlist": "Ajouté à la liste de souhaits",
+  "removedFromWishlist": "Retiré de la liste de souhaits",
+  "linkCopied": "Lien copié dans le presse-papiers",
+  "selectColorSize": "Veuillez sélectionner la couleur et la taille",
+  "quickView": "Aperçu Rapide",
+  "home": "Accueil",
+  "products": "Produits",
+  "color": "Couleur",
+  "size": "Taille",
+  "quantity": "Quantité",
+  "inStock": "En stock",
+  "outOfStock": "Rupture de stock",
+  "reviews": "avis",
+  "tags": "Étiquettes",
+  "specialPricing": "Tarification Spéciale",
+  "buy1For": "Achetez 1 hijab pour 13€ ou 2 hijabs pour 25€. Mélangez et assortissez n'importe quels hijabs !"
 }
 

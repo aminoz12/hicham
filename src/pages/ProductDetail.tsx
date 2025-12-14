@@ -21,7 +21,8 @@ const ProductDetail: React.FC = () => {
 
   const { addItem, updateQuantity } = useCartStore();
   const { openProductModal } = useUIStore();
-  const { t } = useTranslation('home');
+  const { t: tHome } = useTranslation('home');
+  const { t } = useTranslation('products');
 
   const product = id ? getProductById(id) : null;
 
@@ -30,18 +31,20 @@ const ProductDetail: React.FC = () => {
       setSelectedColor(product.colors[0]);
       setSelectedSize(product.sizes[0]);
     }
+    // Scroll to top when product loads
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [product]);
 
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product not found</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('productNotFound')}</h1>
           <button
             onClick={() => navigate('/products')}
             className="btn-primary"
           >
-            Back to Products
+            {t('backToProducts')}
           </button>
         </div>
       </div>
@@ -50,7 +53,7 @@ const ProductDetail: React.FC = () => {
 
   const handleAddToCart = () => {
     if (!selectedColor || !selectedSize) {
-      toast.error('Please select color and size');
+      toast.error(t('selectColorSize'));
       return;
     }
 
@@ -62,12 +65,12 @@ const ProductDetail: React.FC = () => {
       updateQuantity(itemId, quantity);
     }
     
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${product.name} ${t('itemAdded')}`);
   };
 
   const handleWishlist = () => {
     setIsWishlisted(!isWishlisted);
-    toast.success(isWishlisted ? 'Removed from wishlist' : 'Added to wishlist');
+    toast.success(isWishlisted ? t('removedFromWishlist') : t('addedToWishlist'));
   };
 
   const handleShare = async () => {
@@ -83,14 +86,14 @@ const ProductDetail: React.FC = () => {
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast.success('Link copied to clipboard');
+      toast.success(t('linkCopied'));
     }
   };
 
   const features = [
-    { icon: Truck, text: 'Free shipping on orders over $75' },
-    { icon: RotateCcw, text: '30-day returns' },
-    { icon: MessageCircle, text: t('hero.features.orderViaWhatsApp') }
+    { icon: Truck, text: t('freeShipping') + ' sur les commandes de plus de 75€' },
+    { icon: RotateCcw, text: 'Retours sous 30 jours' },
+    { icon: MessageCircle, text: tHome('hero.features.orderViaWhatsApp') }
   ];
 
   return (
@@ -118,6 +121,7 @@ const ProductDetail: React.FC = () => {
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
+                loading="eager"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -138,6 +142,7 @@ const ProductDetail: React.FC = () => {
                     <img
                       src={image}
                       alt={`${product.name} ${index + 1}`}
+                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -155,7 +160,7 @@ const ProductDetail: React.FC = () => {
           >
             {/* Breadcrumb */}
             <nav className="text-sm text-gray-500">
-              <span>Home</span> / <span>Products</span> / <span className="text-gray-900">{product.category}</span>
+              <span>{t('home')}</span> / <span>{t('products')}</span> / <span className="text-gray-900">{product.category}</span>
             </nav>
 
             {/* Title */}
@@ -173,7 +178,7 @@ const ProductDetail: React.FC = () => {
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-gray-600">({product.reviewCount} reviews)</span>
+                  <span className="ml-2 text-gray-600">({product.reviewCount} {t('reviews')})</span>
                 </div>
               </div>
             </div>
@@ -205,9 +210,9 @@ const ProductDetail: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <h4 className="text-sm font-semibold text-blue-900 mb-1">Special Pricing</h4>
+                    <h4 className="text-sm font-semibold text-blue-900 mb-1">{t('specialPricing')}</h4>
                     <p className="text-sm text-blue-700">
-                      Buy 1 hijab for €13 or 2 hijabs for €25. Mix and match any hijabs!
+                      {t('buy1For')}
                     </p>
                   </div>
                 </div>
@@ -219,7 +224,7 @@ const ProductDetail: React.FC = () => {
 
             {/* Colors */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Color: {selectedColor}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('color')}: {selectedColor}</h3>
               <div className="flex space-x-3">
                 {product.colors.map((color) => (
                   <button
@@ -239,7 +244,7 @@ const ProductDetail: React.FC = () => {
 
             {/* Sizes */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Size: {selectedSize}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('size')}: {selectedSize}</h3>
               <div className="flex space-x-3">
                 {product.sizes.map((size) => (
                   <button
@@ -259,7 +264,7 @@ const ProductDetail: React.FC = () => {
 
             {/* Quantity */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Quantity</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('quantity')}</h3>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center border border-gray-300 rounded-lg">
                   <button
@@ -277,7 +282,7 @@ const ProductDetail: React.FC = () => {
                   </button>
                 </div>
                 <span className="text-sm text-gray-500">
-                  {product.inStock ? 'In stock' : 'Out of stock'}
+                  {product.inStock ? t('inStock') : t('outOfStock')}
                 </span>
               </div>
             </div>
@@ -291,7 +296,7 @@ const ProductDetail: React.FC = () => {
                   className="flex-1 btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  <span>Add to Cart</span>
+                  <span>{t('addToCart')}</span>
                 </button>
                 <button
                   onClick={handleWishlist}
@@ -315,7 +320,7 @@ const ProductDetail: React.FC = () => {
                 onClick={() => openProductModal(product)}
                 className="w-full btn-secondary"
               >
-                Quick View
+                {t('quickView')}
               </button>
             </div>
 
@@ -331,7 +336,7 @@ const ProductDetail: React.FC = () => {
 
             {/* Tags */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Tags</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('tags')}</h3>
               <div className="flex flex-wrap gap-2">
                 {product.tags.map((tag) => (
                   <span

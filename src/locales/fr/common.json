@@ -85,5 +85,16 @@
   "newOrder": "Nouvelle Commande",
   "orderDetails": "Détails de la Commande",
   "totalAmount": "Montant Total",
-  "pleaseConfirm": "Veuillez confirmer et fournir les détails de livraison"
+  "pleaseConfirm": "Veuillez confirmer et fournir les détails de livraison",
+  "searching": "Recherche en cours...",
+  "noResultsFound": "Aucun résultat trouvé",
+  "searchResults": "Résultats de recherche",
+  "viewAllResults": "Voir tous les résultats pour",
+  "recentSearches": "Recherches récentes",
+  "trendingSearches": "Recherches tendances",
+  "clearRecent": "Effacer les recherches récentes",
+  "popularSearches": "Recherches populaires",
+  "browseCategories": "Parcourir les catégories",
+  "tryDifferentKeywords": "Essayez de rechercher avec des mots-clés différents",
+  "clear": "Effacer"
 }

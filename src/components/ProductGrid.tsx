@@ -43,18 +43,24 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode, columns =
           onMouseEnter={() => setHoveredProduct(product.id)}
           onMouseLeave={() => setHoveredProduct(null)}
         >
-          <Link to={`/product/${product.id}`} className="block">
+          <Link 
+            to={`/product/${product.id}`} 
+            className="block"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+          >
             {/* Image Container */}
             <div className="relative overflow-hidden mb-3 bg-gray-50">
               <img
                 src={product.image}
                 alt={product.name}
+                loading="lazy"
                 className="w-full h-[400px] sm:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
               />
               {product.images && product.images[1] && (
                 <img
                   src={product.images[1]}
                   alt={product.name}
+                  loading="lazy"
                   className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 />
               )}

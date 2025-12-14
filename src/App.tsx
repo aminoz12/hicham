@@ -14,6 +14,7 @@ import MobileMenu from '@/components/MobileMenu';
 import SearchModal from '@/components/SearchModal';
 import NewsletterModal from '@/components/NewsletterModal';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ScrollToTop from '@/components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -66,6 +67,9 @@ function App() {
         <meta name="twitter:title" content="Hijabi Inoor - Premium Modest Fashion" />
         <meta name="twitter:description" content="Discover elegant abayas and hijabs designed for the modern Muslim woman. Premium quality, beautiful designs." />
       </Helmet>
+
+      {/* Scroll to top on route change */}
+      <ScrollToTop />
 
       {/* Header */}
       <Header />

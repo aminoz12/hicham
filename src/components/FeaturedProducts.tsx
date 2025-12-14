@@ -8,6 +8,7 @@ import { formatPrice, calculateDiscount } from '@/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const FeaturedProducts: React.FC = () => {
   const { ref, inView } = useInView({
@@ -17,6 +18,7 @@ const FeaturedProducts: React.FC = () => {
 
   const { addItem } = useCartStore();
   const { openProductModal } = useUIStore();
+  const { t } = useTranslation('home');
   const featuredProducts = getFeaturedProducts();
 
   const handleAddToCart = (e: React.MouseEvent, product: any) => {
@@ -24,7 +26,7 @@ const FeaturedProducts: React.FC = () => {
     e.stopPropagation();
     
     addItem(product, product.colors[0], product.sizes[0]);
-    toast.success(`${product.name} added to cart!`);
+    toast.success(`${product.name} ${t('itemAdded', { ns: 'products' })}`);
   };
 
   const handleQuickView = (e: React.MouseEvent, product: any) => {
@@ -44,13 +46,13 @@ const FeaturedProducts: React.FC = () => {
           className="mb-16"
         >
           <h2 className="text-2xl sm:text-3xl font-serif text-[#0B0B0D] mb-2 tracking-tight">
-            Curated Selection
+            {t('featured.curatedSelection')}
           </h2>
           <Link 
             to="/products" 
             className="text-sm text-gray-600 hover:text-black transition-colors inline-block"
           >
-            View all →
+            {t('featured.viewAll')} →
           </Link>
         </motion.div>
 
@@ -63,18 +65,24 @@ const FeaturedProducts: React.FC = () => {
               transition={{ duration: 0.4, delay: index * 0.05 }}
               className="group"
             >
-              <Link to={`/product/${product.id}`} className="block">
+              <Link 
+                to={`/product/${product.id}`} 
+                className="block"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+              >
                 {/* Image Container */}
                 <div className="relative overflow-hidden mb-4 bg-gray-50">
                   <img
                     src={product.image}
                     alt={product.name}
+                    loading="lazy"
                     className="w-full h-[400px] sm:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
                   />
                   {product.images && product.images[1] && (
                     <img
                       src={product.images[1]}
                       alt={product.name}
+                      loading="lazy"
                       className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
                   )}

@@ -2,12 +2,14 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const Categories: React.FC = () => {
   const { ref, inView } = useInView({
     threshold: 0.1,
     triggerOnce: true
   });
+  const { t } = useTranslation('home');
 
   const categories = [
     {
@@ -50,7 +52,7 @@ const Categories: React.FC = () => {
           className="mb-12"
         >
           <h2 className="text-2xl sm:text-3xl font-serif text-[#0B0B0D] mb-2 tracking-tight">
-            Shop by Category
+            {t('categories.shopByCategory')}
           </h2>
         </motion.div>
 
@@ -69,6 +71,7 @@ const Categories: React.FC = () => {
                   <img
                     src={category.image}
                     alt={category.name}
+                    loading="lazy"
                     className="w-full h-[300px] sm:h-[350px] object-cover group-hover:opacity-95 transition-opacity duration-300"
                   />
                 </div>
@@ -79,7 +82,7 @@ const Categories: React.FC = () => {
                     {category.name}
                   </h3>
                   <p className="text-sm text-gray-600">
-                    {category.count}
+                    {category.count.replace('items', t('categories.items'))}
                   </p>
                 </div>
               </Link>
