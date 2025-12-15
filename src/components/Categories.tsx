@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useTranslation } from '@/hooks/useTranslation';
 
 const Categories: React.FC = () => {
@@ -15,29 +17,38 @@ const Categories: React.FC = () => {
     {
       id: 'hijabs',
       name: 'Hijabs',
-      description: 'Premium hijabs in various fabrics and styles',
+      description: 'Hijabs de qualité supérieure en différents tissus et styles',
       image: '/hijabs.png',
-      count: '4 items',
+      count: '4 articles',
       featured: true,
       gradient: 'from-purple-500 to-pink-500'
     },
     {
       id: 'abayas',
       name: 'Abayas',
-      description: 'Elegant abayas for every occasion',
+      description: 'Abayas élégantes pour toutes les occasions',
       image: '/abaya.png',
-      count: '4 items',
+      count: '4 articles',
       featured: true,
       gradient: 'from-blue-500 to-indigo-500'
     },
     {
-      id: 'accessories',
-      name: 'Accessories',
-      description: 'Essential hijab accessories',
-      image: '/acc.png',
-      count: '4 items',
+      id: 'ensemble',
+      name: 'Ensemble',
+      description: 'Ensembles élégants et raffinés',
+      image: '/c1.png',
+      count: '4 articles',
       featured: true,
       gradient: 'from-pink-500 to-rose-500'
+    },
+    {
+      id: 'boxes-cadeau',
+      name: 'Boxes Cadeau',
+      description: 'Boxes cadeau élégantes et personnalisées',
+      image: '/cofferet.jpeg',
+      count: '4 articles',
+      featured: true,
+      gradient: 'from-green-500 to-emerald-500'
     }
   ];
 
@@ -56,7 +67,7 @@ const Categories: React.FC = () => {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {categories.map((category, index) => (
             <motion.div
               key={category.id}
@@ -68,10 +79,13 @@ const Categories: React.FC = () => {
               <Link to={`/${category.id}`} className="block">
                 {/* Image */}
                 <div className="relative overflow-hidden mb-4 bg-gray-50">
-                  <img
+                  <LazyLoadImage
                     src={category.image}
                     alt={category.name}
-                    loading="lazy"
+                    effect="blur"
+                    placeholderSrc="/logo.png"
+                    width="100%"
+                    height="100%"
                     className="w-full h-[300px] sm:h-[350px] object-cover group-hover:opacity-95 transition-opacity duration-300"
                   />
                 </div>

@@ -66,7 +66,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en',
+    fallbackLng: 'fr',
     debug: true, // Enable debug to see what's happening
     
     // Language detection options

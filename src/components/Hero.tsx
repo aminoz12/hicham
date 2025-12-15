@@ -78,7 +78,7 @@ const Hero: React.FC = () => {
           }}
         >
           <span className="block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
-            {t('hero.title')}
+          {t('hero.title')}
           </span>
         </motion.h1>
         <motion.div
@@ -86,8 +86,8 @@ const Hero: React.FC = () => {
           animate={inView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
-          <Link
-            to="/products"
+        <Link
+          to="/products"
             className="group relative inline-flex items-center justify-center px-8 py-4 text-base sm:text-lg font-semibold tracking-wider uppercase transition-all duration-300 overflow-hidden"
           >
             {/* Button Background */}
@@ -111,7 +111,7 @@ const Hero: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </motion.svg>
             </span>
-          </Link>
+        </Link>
         </motion.div>
       </motion.div>
 

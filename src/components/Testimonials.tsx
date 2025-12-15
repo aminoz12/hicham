@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Star, Quote, CheckCircle } from 'lucide-react';
 import { testimonials } from '@/data/testimonials';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Testimonials: React.FC = () => {
   const { ref, inView } = useInView({
@@ -76,9 +77,13 @@ const Testimonials: React.FC = () => {
                 {/* Customer Info */}
                 <div className="flex items-center justify-center space-x-3">
                   <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <img
+                    <LazyLoadImage
                       src={testimonial.avatar}
                       alt={testimonial.name}
+                      effect="blur"
+                      placeholderSrc="/logo.png"
+                      width="100%"
+                      height="100%"
                       className="w-full h-full object-cover"
                     />
                   </div>

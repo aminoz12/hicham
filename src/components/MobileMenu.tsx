@@ -42,23 +42,26 @@ const MobileMenu: React.FC = () => {
       ]
     },
     {
-      label: 'Accessories',
-      href: '/accessories',
+      label: 'Ensemble',
+      href: '/ensemble',
       children: [
-        { label: 'Hijab Caps', href: '/accessories?type=caps' },
-        { label: 'Magnets', href: '/accessories?type=magnets' },
-        { label: 'Hair Ties', href: '/accessories?type=hair-ties' },
-        { label: 'Neck Covers', href: '/accessories?type=neck-covers' },
+        { label: 'Ensembles Haut & Jupe', href: '/ensemble?type=top-skirt' },
+        { label: 'Ensembles Haut & Pantalon', href: '/ensemble?type=top-pants' },
+        { label: 'Ensembles Tricot', href: '/ensemble?type=knitwear' },
       ]
+    },
+    {
+      label: 'Boxes Cadeau',
+      href: '/boxes-cadeau',
     }
   ];
 
   const quickLinks = [
-    { label: 'New Arrivals', href: '/products?filter=new' },
-    { label: 'Sale', href: '/products?filter=sale' },
-    { label: 'Best Sellers', href: '/products?filter=bestsellers' },
-    { label: 'Size Guide', href: '/size-guide' },
-    { label: 'About Us', href: '/about' },
+    { label: 'Nouveautés', href: '/products?filter=new' },
+    { label: 'Vente', href: '/products?filter=sale' },
+    { label: 'Meilleures ventes', href: '/products?filter=bestsellers' },
+    { label: 'Guide des tailles', href: '/size-guide' },
+    { label: 'À propos', href: '/about' },
     { label: 'Contact', href: '/contact' },
   ];
 
@@ -100,7 +103,7 @@ const MobileMenu: React.FC = () => {
             {/* Language Section */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Language
+                Langue
               </h3>
               <div className="p-3">
                 <LanguageSwitcher />
@@ -110,7 +113,7 @@ const MobileMenu: React.FC = () => {
             {/* Account Section */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Account
+                Compte
               </h3>
               <div className="space-y-2">
                 <Link
@@ -119,7 +122,7 @@ const MobileMenu: React.FC = () => {
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <User className="h-5 w-5 text-gray-600" />
-                  <span className="text-gray-900">My Account</span>
+                  <span className="text-gray-900">Mon Compte</span>
                 </Link>
                 <Link
                   to="/wishlist"
@@ -127,7 +130,7 @@ const MobileMenu: React.FC = () => {
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <Heart className="h-5 w-5 text-gray-600" />
-                  <span className="text-gray-900">Wishlist</span>
+                  <span className="text-gray-900">Liste de souhaits</span>
                 </Link>
                 <Link
                   to="/cart"
@@ -135,7 +138,7 @@ const MobileMenu: React.FC = () => {
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors relative"
                 >
                   <ShoppingBag className="h-5 w-5 text-gray-600" />
-                  <span className="text-gray-900">Cart</span>
+                  <span className="text-gray-900">Panier</span>
                   {itemCount > 0 && (
                     <span className="ml-auto bg-primary-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                       {itemCount}
@@ -148,7 +151,7 @@ const MobileMenu: React.FC = () => {
             {/* Navigation */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Shop
+                Boutique
               </h3>
               <div className="space-y-1">
                 {navigationItems.map((item) => (
@@ -187,7 +190,7 @@ const MobileMenu: React.FC = () => {
             {/* Quick Links */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                Quick Links
+                Liens rapides
               </h3>
               <div className="space-y-1">
                 {quickLinks.map((link) => (
@@ -206,13 +209,13 @@ const MobileMenu: React.FC = () => {
             {/* Newsletter Signup */}
             <div className="bg-gradient-to-r from-primary-50 to-secondary-50 p-4 rounded-xl">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">
-                Stay Updated
+                Restez informé
               </h3>
               <p className="text-xs text-gray-600 mb-3">
-                Get 15% off your first order and exclusive updates
+                Obtenez 15% de réduction sur votre première commande et des mises à jour exclusives
               </p>
               <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
-                Subscribe Now
+                S'abonner maintenant
               </button>
             </div>
           </div>

@@ -6,6 +6,8 @@ import {
   ChevronDown,
   ShoppingCart
 } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { clsx } from 'clsx';
@@ -65,14 +67,17 @@ const Header: React.FC = () => {
       ]
     },
     {
-      label: t('accessories'),
-      href: '/accessories',
+      label: t('ensemble'),
+      href: '/ensemble',
       children: [
-        { label: t('hijabCaps'), href: '/accessories?type=caps' },
-        { label: t('magnets'), href: '/accessories?type=magnets' },
-        { label: t('hairTies'), href: '/accessories?type=hair-ties' },
-        { label: t('neckCovers'), href: '/accessories?type=neck-covers' },
+        { label: t('topSkirtSets'), href: '/ensemble?type=top-skirt' },
+        { label: t('topPantsSets'), href: '/ensemble?type=top-pants' },
+        { label: t('knitwearSets'), href: '/ensemble?type=knitwear' },
       ]
+    },
+    {
+      label: t('boxesCadeau'),
+      href: '/boxes-cadeau',
     }
   ];
 
@@ -151,9 +156,13 @@ const Header: React.FC = () => {
                 whileTap={{ scale: 0.95 }}
                 className="h-8 lg:h-10 flex items-center justify-center"
               >
-                <img
+                <LazyLoadImage
                   src="/logo.png"
                   alt="Hijabi Inoor Logo"
+                  effect="blur"
+                  placeholderSrc="/logo.png"
+                  width="auto"
+                  height="100%"
                   className="h-full w-auto object-contain"
                 />
               </motion.div>

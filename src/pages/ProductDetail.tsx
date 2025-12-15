@@ -9,6 +9,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from '@/hooks/useTranslation';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -118,10 +119,13 @@ const ProductDetail: React.FC = () => {
           >
             {/* Main Image */}
             <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100">
-              <img
+              <LazyLoadImage
                 src={product.images[selectedImage]}
                 alt={product.name}
-                loading="eager"
+                effect="blur"
+                placeholderSrc="/logo.png"
+                width="100%"
+                height="100%"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -139,10 +143,13 @@ const ProductDetail: React.FC = () => {
                         : 'hover:ring-2 hover:ring-gray-300'
                     }`}
                   >
-                    <img
+                    <LazyLoadImage
                       src={image}
                       alt={`${product.name} ${index + 1}`}
-                      loading="lazy"
+                      effect="blur"
+                      placeholderSrc="/logo.png"
+                      width="100%"
+                      height="100%"
                       className="w-full h-full object-cover"
                     />
                   </button>

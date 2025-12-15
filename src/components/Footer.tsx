@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { 
   Facebook, 
   Instagram, 
@@ -28,28 +30,28 @@ const Footer: React.FC = () => {
   ];
 
   const quickLinks = [
-    { label: 'About Us', href: '/about' },
-    { label: 'Our Story', href: '/story' },
-    { label: 'Size Guide', href: '/size-guide' },
-    { label: 'Care Instructions', href: '/care' },
+    { label: 'À propos', href: '/about' },
+    { label: 'Notre histoire', href: '/story' },
+    { label: 'Guide des tailles', href: '/size-guide' },
+    { label: 'Instructions d\'entretien', href: '/care' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Press', href: '/press' }
+    { label: 'Presse', href: '/press' }
   ];
 
   const customerService = [
-    { label: 'Contact Us', href: '/contact' },
+    { label: 'Nous contacter', href: '/contact' },
     { label: 'FAQ', href: '/faq' },
-    { label: 'Shipping Info', href: '/shipping' },
-    { label: 'Returns & Exchanges', href: '/returns' },
-    { label: 'Track Your Order', href: '/track' },
-    { label: 'Size Chart', href: '/size-chart' }
+    { label: 'Informations de livraison', href: '/shipping' },
+    { label: 'Retours et échanges', href: '/returns' },
+    { label: 'Suivre votre commande', href: '/track' },
+    { label: 'Tableau des tailles', href: '/size-chart' }
   ];
 
   const legal = [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
-    { label: 'Accessibility', href: '/accessibility' }
+    { label: 'Politique de confidentialité', href: '/privacy' },
+    { label: 'Conditions d\'utilisation', href: '/terms' },
+    { label: 'Politique des cookies', href: '/cookies' },
+    { label: 'Accessibilité', href: '/accessibility' }
   ];
 
   return (
@@ -68,9 +70,13 @@ const Footer: React.FC = () => {
             >
               <Link to="/" className="flex items-center space-x-2 group">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <img 
+                  <LazyLoadImage 
                     src="/logo.png" 
                     alt="Hijabi Inoor Logo" 
+                    effect="blur"
+                    placeholderSrc="/logo.png"
+                    width="100%"
+                    height="100%"
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -89,8 +95,8 @@ const Footer: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-gray-300 mb-6 leading-relaxed"
             >
-              Elevating modest fashion with elegance and quality. 
-              Discover our curated collection of abayas, hijabs, and accessories.
+              Élever la mode modeste avec élégance et qualité. 
+              Découvrez notre collection sélectionnée d'abayas, hijabs et ensembles.
             </motion.p>
 
             {/* Social Links */}
@@ -121,7 +127,7 @@ const Footer: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-6">Liens rapides</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
@@ -142,7 +148,7 @@ const Footer: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h4 className="text-lg font-semibold mb-6">Customer Service</h4>
+            <h4 className="text-lg font-semibold mb-6">Service client</h4>
             <ul className="space-y-3">
               {customerService.map((link) => (
                 <li key={link.label}>
@@ -163,13 +169,13 @@ const Footer: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <h4 className="text-lg font-semibold mb-6">Get in Touch</h4>
+            <h4 className="text-lg font-semibold mb-6">Contactez-nous</h4>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <Mail className="h-5 w-5 text-primary-400 mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300">hello@hijabiinoor.com</p>
-                  <p className="text-sm text-gray-400">We'll respond within 24 hours</p>
+                  <p className="text-sm text-gray-400">Nous répondrons dans les 24 heures</p>
                 </div>
               </div>
               
@@ -194,10 +200,10 @@ const Footer: React.FC = () => {
             <div className="mt-8">
               <h5 className="text-sm font-semibold text-gray-300 mb-3">Newsletter</h5>
               <p className="text-sm text-gray-400 mb-4">
-                Get 15% off your first order
+                Obtenez 15% de réduction sur votre première commande
               </p>
               <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
-                Subscribe Now
+                S'abonner maintenant
               </button>
             </div>
           </motion.div>
@@ -216,11 +222,11 @@ const Footer: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="flex items-center space-x-2 text-gray-400"
             >
-              <span>© {currentYear} Hijabi Inoor. All rights reserved.</span>
+              <span>© {currentYear} Hijabi Inoor. Tous droits réservés.</span>
               <span className="hidden md:inline">•</span>
-              <span className="hidden md:inline">Made with</span>
+              <span className="hidden md:inline">Fait avec</span>
               <Heart className="h-4 w-4 text-red-500 fill-current" />
-              <span className="hidden md:inline">in France</span>
+              <span className="hidden md:inline">en France</span>
             </motion.div>
 
             {/* Legal Links */}
@@ -252,7 +258,7 @@ const Footer: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               className="flex items-center space-x-2 text-gray-400 hover:text-primary-400 transition-colors"
             >
-              <span className="text-sm">Back to top</span>
+              <span className="text-sm">Retour en haut</span>
               <ArrowUp className="h-4 w-4" />
             </motion.button>
           </div>

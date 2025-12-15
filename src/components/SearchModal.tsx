@@ -7,6 +7,7 @@ import { searchProducts } from '@/utils';
 import { products } from '@/data/products';
 import { formatPrice } from '@/utils';
 import { useTranslation } from '@/hooks/useTranslation';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const SearchModal: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -154,10 +155,13 @@ const SearchModal: React.FC = () => {
                         className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                          <img
+                          <LazyLoadImage
                             src={product.images[0]}
                             alt={product.name}
-                            loading="lazy"
+                            effect="blur"
+                            placeholderSrc="/logo.png"
+                            width="100%"
+                            height="100%"
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -271,10 +275,10 @@ const SearchModal: React.FC = () => {
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { name: 'Hijabs', href: '/hijabs', count: '24 items' },
-                    { name: 'Abayas', href: '/abayas', count: '18 items' },
-                    { name: 'Dresses', href: '/dresses', count: '12 items' },
-                    { name: 'Accessories', href: '/accessories', count: '8 items' },
+                    { name: 'Hijabs', href: '/hijabs', count: '24 articles' },
+                    { name: 'Abayas', href: '/abayas', count: '18 articles' },
+                    { name: 'Ensemble', href: '/ensemble', count: '12 articles' },
+                    { name: 'Boxes Cadeau', href: '/boxes-cadeau', count: '8 articles' },
                   ].map((category) => (
                     <Link
                       key={category.name}

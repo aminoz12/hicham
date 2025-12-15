@@ -85,7 +85,8 @@ function App() {
             <Route path="/hijabs" element={<Products />} />
             <Route path="/abayas" element={<Products />} />
             <Route path="/dresses" element={<Products />} />
-            <Route path="/accessories" element={<Products />} />
+            <Route path="/ensemble" element={<Products />} />
+            <Route path="/boxes-cadeau" element={<Products />} />
             <Route path="/coords" element={<Products />} />
           </Routes>
         </AnimatePresence>

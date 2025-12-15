@@ -7,6 +7,7 @@ import { useUIStore } from '@/store/uiStore';
 import { formatPrice, calculateItemPrice } from '@/utils';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from '@/hooks/useTranslation';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Cart: React.FC = () => {
   const { 
@@ -146,9 +147,13 @@ const Cart: React.FC = () => {
                   >
                     {/* Product Image */}
                     <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                      <img
+                      <LazyLoadImage
                         src={item.product.images[0]}
                         alt={item.product.name}
+                        effect="blur"
+                        placeholderSrc="/logo.png"
+                        width="100%"
+                        height="100%"
                         className="w-full h-full object-cover"
                       />
                     </div>

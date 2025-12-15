@@ -28,7 +28,7 @@ export interface Product {
   tags: string[];
 }
 
-export type ProductCategory = 'hijabs' | 'abayas' | 'accessories';
+export type ProductCategory = 'hijabs' | 'abayas' | 'ensemble' | 'boxes-cadeau';
 
 export interface CartItem {
   id: string;

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Product } from '@/types';
 import { formatPrice } from '@/utils';
 
@@ -50,17 +52,23 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode: _viewMode
           >
             {/* Image Container */}
             <div className="relative overflow-hidden mb-3 bg-gray-50">
-              <img
+              <LazyLoadImage
                 src={product.image}
                 alt={product.name}
-                loading="lazy"
+                effect="blur"
+                placeholderSrc="/logo.png"
+                width="100%"
+                height="100%"
                 className="w-full h-[300px] sm:h-[400px] lg:h-[450px] object-cover group-hover:opacity-95 transition-opacity duration-300"
               />
               {product.images && product.images[1] && (
-                <img
+                <LazyLoadImage
                   src={product.images[1]}
                   alt={product.name}
-                  loading="lazy"
+                  effect="blur"
+                  placeholderSrc="/logo.png"
+                  width="100%"
+                  height="100%"
                   className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 />
               )}
