@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Mail, Gift, CheckCircle, Bell, Shield } from 'lucide-react';
+import { Gift, CheckCircle, Bell, Shield } from 'lucide-react';
 // import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
 
@@ -111,54 +111,83 @@ const Newsletter: React.FC = () => {
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
             Stay in the Loop
           </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Subscribe to our newsletter and receive exclusive offers, updates, and more!
+          </p>
+
+          {/* Email Form */}
+          <form onSubmit={handleSubmit} className="mt-6 sm:flex max-w-md mx-auto">
+            <label htmlFor="email-address" className="sr-only">
+              Email address
+            </label>
+            <input
+              id="email-address"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-5 py-3 border border-transparent placeholder-gray-500 focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-700 focus:ring-white focus:border-white sm:max-w-xs rounded-md"
+              placeholder="Enter your email"
+            />
+            <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
+              <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`mt-3 w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white ${
+                className={`w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white ${
                   isSubmitting ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
-                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:flex-shrink-0 sm:inline-flex sm:items-center sm:w-auto`}
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:flex-shrink-0 sm:inline-flex sm:items-center sm:w-auto`}
               >
-                {isSubmitting ? 'Inscription en cours...' : 'S\'inscrire'}
+                {isSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
-            </form>
-          </div>
-        </div>
-        
-        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="flex items-center justify-center">
-            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2">
-              <Gift className="h-6 w-6 text-white" />
             </div>
-            <p className="ml-3 text-base text-gray-700">15% de réduction</p>
+          </form>
+
+          {/* Benefits */}
+          <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col items-center text-center p-4"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <Gift className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-white/90 font-medium">Exclusive Offers</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.4 }}
+              className="flex flex-col items-center text-center p-4"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <Bell className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-white/90 font-medium">Latest Updates</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.6 }}
+              className="flex flex-col items-center text-center p-4"
+            >
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-white/90 font-medium">No Spam, Ever</p>
+            </motion.div>
           </div>
-          <div className="flex items-center justify-center">
-            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2">
-              <Bell className="h-6 w-6 text-white" />
-            </div>
-            <p className="ml-3 text-base text-gray-700">Mises à jour exclusives</p>
-          </div>
-          <div className="flex items-center justify-center">
-            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2">
-              <Shield className="h-6 w-6 text-white" />
-            </div>
-            <p className="ml-3 text-base text-gray-700">Pas de spam, jamais</p>
-          </div>
-        </div>
-                transition={{ delay: 0.8 + index * 0.1 }}
-                className="flex flex-col items-center"
-              >
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-3">
-                  <benefit.icon className="h-6 w-6 text-white" />
-                </div>
-                <p className="text-white/90 font-medium">{benefit.text}</p>
-              </motion.div>
-            ))}
-          </motion.div>
 
           {/* Privacy Note */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
-            transition={{ delay: 1 }}
+            transition={{ delay: 0.8 }}
             className="text-white/70 text-sm mt-8"
           >
             By subscribing, you agree to our Privacy Policy. You can unsubscribe at any time.

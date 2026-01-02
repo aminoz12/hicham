@@ -1,8 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Star, Quote, CheckCircle } from 'lucide-react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { Star, Quote } from 'lucide-react';
 
 const TestimonialsFr: React.FC = () => {
   const { ref, inView } = useInView({
