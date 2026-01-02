@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { Mail, Gift, CheckCircle } from 'lucide-react';
+import { Mail, Gift, CheckCircle, Bell, Shield } from 'lucide-react';
 // import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
 
@@ -111,66 +111,38 @@ const Newsletter: React.FC = () => {
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
             Stay in the Loop
           </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Get exclusive access to new arrivals, special offers, and styling tips. 
-            Plus, enjoy 15% off your first order!
-          </p>
-
-          {/* Form */}
-          <motion.form
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.4 }}
-            onSubmit={handleSubmit}
-            className="max-w-md mx-auto"
-          >
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/70" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="w-full pl-10 pr-4 py-4 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                  required
-                />
-              </div>
-              <motion.button
                 type="submit"
                 disabled={isSubmitting}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-primary-600 font-semibold py-4 px-8 rounded-xl hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className={`mt-3 w-full flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white ${
+                  isSubmitting ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:flex-shrink-0 sm:inline-flex sm:items-center sm:w-auto`}
               >
-                {isSubmitting ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
-                    <span>Subscribing...</span>
-                  </div>
-                ) : (
-                  'Subscribe'
-                )}
-              </motion.button>
+                {isSubmitting ? 'Inscription en cours...' : 'S\'inscrire'}
+              </button>
+            </form>
+          </div>
+        </div>
+        
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2">
+              <Gift className="h-6 w-6 text-white" />
             </div>
-          </motion.form>
-
-          {/* Benefits */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.6 }}
-            className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center"
-          >
-            {[
-              { icon: Gift, text: '15% Off First Order' },
-              { icon: Mail, text: 'Exclusive Updates' },
-              { icon: CheckCircle, text: 'No Spam, Ever' }
-            ].map((benefit, index) => (
-              <motion.div
-                key={benefit.text}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
+            <p className="ml-3 text-base text-gray-700">15% de réduction</p>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2">
+              <Bell className="h-6 w-6 text-white" />
+            </div>
+            <p className="ml-3 text-base text-gray-700">Mises à jour exclusives</p>
+          </div>
+          <div className="flex items-center justify-center">
+            <div className="flex-shrink-0 bg-indigo-500 rounded-md p-2">
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+            <p className="ml-3 text-base text-gray-700">Pas de spam, jamais</p>
+          </div>
+        </div>
                 transition={{ delay: 0.8 + index * 0.1 }}
                 className="flex flex-col items-center"
               >

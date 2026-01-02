@@ -3,8 +3,8 @@ import { Helmet } from 'react-helmet-async';
 import Hero from '@/components/Hero';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import Categories from '@/components/Categories';
-import Testimonials from '@/components/Testimonials';
-import Newsletter from '@/components/Newsletter';
+import TestimonialsFr from '@/components/TestimonialsFr';
+import NewsletterFr from '@/components/NewsletterFr';
 import { useUIStore } from '@/store/uiStore';
 
 const Home: React.FC = () => {
@@ -35,11 +35,11 @@ const Home: React.FC = () => {
       {/* Featured Products / Curated Selection */}
       <FeaturedProducts />
 
-      {/* Testimonials */}
-      <Testimonials />
+      {/* Témoignages en français */}
+      <TestimonialsFr />
 
-      {/* Newsletter */}
-      <Newsletter />
+      {/* French Newsletter */}
+      <NewsletterFr />
     </div>
   );
 };
