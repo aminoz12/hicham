@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
 
   const socialLinks = [
     { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
+    { icon: Instagram, href: 'https://www.instagram.com/hijabinour.shop/', label: 'Instagram', target: '_blank', rel: 'noopener noreferrer' },
     { icon: Twitter, href: '#', label: 'Twitter' },
     { icon: Youtube, href: '#', label: 'YouTube' }
   ];
@@ -110,6 +110,8 @@ const Footer: React.FC = () => {
                 <motion.a
                   key={social.label}
                   href={social.href}
+                  target={social.target || '_self'}
+                  rel={social.rel || ''}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
