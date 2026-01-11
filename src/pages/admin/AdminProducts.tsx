@@ -12,15 +12,17 @@ import { sampleProducts } from '@/data/products';
 import { Product } from '@/types';
 import toast from 'react-hot-toast';
 
-// Mock functions - replace with actual API calls
+// Mock functions - replace with actual Supabase calls
 const fetchProducts = async (): Promise<Product[]> => {
   await new Promise(resolve => setTimeout(resolve, 500));
+  // In production, use: const { data } = await supabase.from('products').select('*');
   return sampleProducts;
 };
 
-const deleteProduct = async (_id: string): Promise<void> => {
+const deleteProduct = async (id: string): Promise<void> => {
   await new Promise(resolve => setTimeout(resolve, 500));
-  toast.success('Produit supprimé');
+  // In production, use: await supabase.from('products').delete().eq('id', id);
+  console.log('Deleting product:', id);
 };
 
 export function AdminProducts() {
@@ -44,9 +46,16 @@ export function AdminProducts() {
     product.id.includes(searchQuery)
   );
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-      deleteMutation.mutate(id);
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer le produit "${name}" ? Cette action est irréversible.`)) {
+      deleteMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success('Produit supprimé avec succès');
+        },
+        onError: () => {
+          toast.error('Erreur lors de la suppression');
+        },
+      });
     }
   };
 
@@ -56,14 +65,16 @@ export function AdminProducts() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Produits</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+            Produits
+          </h1>
+          <p className="text-slate-600 mt-2">
             Gérez vos produits et leur inventaire
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link to="/admin/products/new">
             <Plus className="mr-2 h-4 w-4" />
             Ajouter un produit
@@ -71,22 +82,23 @@ export function AdminProducts() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="border-slate-200 shadow-sm">
         <CardHeader>
-          <div className="flex items-center space-x-2">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Rechercher un produit..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8"
+                className="pl-10"
               />
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Image</TableHead>
@@ -133,7 +145,8 @@ export function AdminProducts() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(product.id)}
+                        onClick={() => handleDelete(product.id, product.name)}
+                        disabled={deleteMutation.isPending}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
                       </Button>
@@ -143,6 +156,7 @@ export function AdminProducts() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

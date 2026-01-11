@@ -22,9 +22,11 @@ import { AdminPage } from '@/pages/admin/AdminPage';
 import { AdminLogin } from '@/pages/admin/AdminLogin';
 import { AdminDashboard } from '@/pages/admin/AdminDashboard';
 import { AdminProducts } from '@/pages/admin/AdminProducts';
+import { AdminProductEdit } from '@/pages/admin/AdminProductEdit';
 import { AdminOrders } from '@/pages/admin/AdminOrders';
 import { AdminOrderDetail } from '@/pages/admin/AdminOrderDetail';
 import { AdminCategories } from '@/pages/admin/AdminCategories';
+import { AdminPromotions } from '@/pages/admin/AdminPromotions';
 import { AdminSettings } from '@/pages/admin/AdminSettings';
 
 function App() {
@@ -81,41 +83,99 @@ function App() {
       {/* Scroll to top on route change */}
       <ScrollToTop />
 
-      {/* Header */}
-      <Header />
-
       {/* Main Content */}
       <main className="relative">
         <AnimatePresence mode="wait">
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/products/:category" element={<Products />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/hijabs" element={<Products />} />
-            <Route path="/abayas" element={<Products />} />
-            <Route path="/dresses" element={<Products />} />
-            <Route path="/ensemble" element={<Products />} />
-            <Route path="/boxes-cadeau" element={<Products />} />
-            <Route path="/coords" element={<Products />} />
+            {/* Public Routes - With Header & Footer */}
+            <Route path="/" element={
+              <>
+                <Header />
+                <Home />
+                <Footer />
+              </>
+            } />
+            <Route path="/products" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/products/:category" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/product/:id" element={
+              <>
+                <Header />
+                <ProductDetail />
+                <Footer />
+              </>
+            } />
+            <Route path="/hijabs" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/abayas" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/dresses" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/ensemble" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/boxes-cadeau" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/coords" element={
+              <>
+                <Header />
+                <Products />
+                <Footer />
+              </>
+            } />
 
-            {/* Admin Routes */}
+            {/* Admin Routes - No Header & Footer */}
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminPage />}>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="products" element={<AdminProducts />} />
+              <Route path="products/:id" element={<AdminProductEdit />} />
+              <Route path="products/new" element={<AdminProductEdit />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="orders/:id" element={<AdminOrderDetail />} />
               <Route path="categories" element={<AdminCategories />} />
+              <Route path="promotions" element={<AdminPromotions />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Routes>
         </AnimatePresence>
       </main>
-
-      {/* Footer */}
-      <Footer />
 
       {/* Modals and Overlays */}
       <AnimatePresence>
