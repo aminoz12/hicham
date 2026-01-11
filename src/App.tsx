@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useUIStore } from '@/store/uiStore';
@@ -16,6 +16,16 @@ import NewsletterModal from '@/components/NewsletterModal';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ScrollToTop from '@/components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
+
+// Admin Pages
+import { AdminPage } from '@/pages/admin/AdminPage';
+import { AdminLogin } from '@/pages/admin/AdminLogin';
+import { AdminDashboard } from '@/pages/admin/AdminDashboard';
+import { AdminProducts } from '@/pages/admin/AdminProducts';
+import { AdminOrders } from '@/pages/admin/AdminOrders';
+import { AdminOrderDetail } from '@/pages/admin/AdminOrderDetail';
+import { AdminCategories } from '@/pages/admin/AdminCategories';
+import { AdminSettings } from '@/pages/admin/AdminSettings';
 
 function App() {
   const { 
@@ -88,6 +98,18 @@ function App() {
             <Route path="/ensemble" element={<Products />} />
             <Route path="/boxes-cadeau" element={<Products />} />
             <Route path="/coords" element={<Products />} />
+
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminPage />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:id" element={<AdminOrderDetail />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
           </Routes>
         </AnimatePresence>
       </main>
