@@ -8,18 +8,17 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@/lib/utils';
-import { sampleProducts } from '@/data/products';
 import { Product } from '@/types';
+import { fetchAllProducts, deleteProduct as deleteProductService } from '@/services/productService';
 import toast from 'react-hot-toast';
 
-// Mock functions - replace with actual Supabase calls
 const fetchProducts = async (): Promise<Product[]> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  // In production, use: const { data } = await supabase.from('products').select('*');
-  return sampleProducts;
+  return await fetchAllProducts();
 };
 
 const deleteProduct = async (id: string): Promise<void> => {
+  await deleteProductService(id);
+}; {
   await new Promise(resolve => setTimeout(resolve, 500));
   // In production, use: await supabase.from('products').delete().eq('id', id);
   console.log('Deleting product:', id);

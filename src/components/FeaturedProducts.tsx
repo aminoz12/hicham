@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { getFeaturedProducts } from '@/data/products';
+import { fetchFeaturedProducts } from '@/services/productService';
 import { formatPrice, calculateDiscount } from '@/utils';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Product } from '@/types';
 
 const FeaturedProducts: React.FC = () => {
   const { ref, inView } = useInView({
@@ -15,7 +16,23 @@ const FeaturedProducts: React.FC = () => {
   });
 
   const { t } = useTranslation('home');
-  const featuredProducts = getFeaturedProducts();
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const products = await fetchFeaturedProducts(8);
+        setFeaturedProducts(products);
+      } catch (error) {
+        console.error('Error loading featured products:', error);
+        setFeaturedProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProducts();
+  }, []);
 
   return (
     <section className="py-20 bg-white">
@@ -38,8 +55,19 @@ const FeaturedProducts: React.FC = () => {
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
-          {featuredProducts.map((product, index) => (
+        {isLoading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="w-full h-[300px] sm:h-[400px] lg:h-[450px] bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded mt-4"></div>
+                <div className="h-4 bg-gray-200 rounded mt-2 w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            {featuredProducts.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 20 }}
@@ -105,7 +133,8 @@ const FeaturedProducts: React.FC = () => {
               </Link>
             </motion.div>
           ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

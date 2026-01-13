@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Star, Heart, Share2, Truck, RotateCcw, MessageCircle, Plus, Minus, ShoppingCart } from 'lucide-react';
-import { getProductById } from '@/data/products';
+import { fetchProductById } from '@/services/productService';
 import { formatPrice, calculateDiscount } from '@/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
@@ -25,7 +25,20 @@ const ProductDetail: React.FC = () => {
   const { t: tHome } = useTranslation('home');
   const { t } = useTranslation('products');
 
-  const product = id ? getProductById(id) : null;
+  const [product, setProduct] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProduct = async () => {
+      if (id) {
+        setIsLoading(true);
+        const productData = await fetchProductById(id);
+        setProduct(productData);
+        setIsLoading(false);
+      }
+    };
+    loadProduct();
+  }, [id]);
 
   useEffect(() => {
     if (product) {
@@ -35,6 +48,17 @@ const ProductDetail: React.FC = () => {
     // Scroll to top when product loads
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [product]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Chargement du produit...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (

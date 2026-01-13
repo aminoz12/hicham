@@ -6,23 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { sampleProducts } from '@/data/products';
 import { Product } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { fetchProductById, saveProduct as saveProductService, deleteProduct as deleteProductService } from '@/services/productService';
 import toast from 'react-hot-toast';
 
 const fetchProduct = async (id: string): Promise<Product | null> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return sampleProducts.find(p => p.id === id) || null;
+  return await fetchProductById(id);
 };
 
 const saveProduct = async (product: Partial<Product>): Promise<Product> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return product as Product;
+  return await saveProductService(product);
 };
 
 const deleteProduct = async (_id: string): Promise<void> => {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await deleteProductService(_id);
 };
 
 export function AdminProductEdit() {
@@ -67,7 +65,13 @@ export function AdminProductEdit() {
     isNew: false,
     isOnSale: false,
     originalPrice: '',
+    sizes: [] as string[],
+    colors: [] as string[],
+    promotionType: 'none' as 'none' | 'buy2get1' | 'buy2' | 'buy3' | 'percentage',
+    promotionValue: '',
   });
+  const [sizeInput, setSizeInput] = useState('');
+  const [colorInput, setColorInput] = useState('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [uploading, setUploading] = useState(false);
@@ -87,6 +91,10 @@ export function AdminProductEdit() {
         isNew: product.isNew,
         isOnSale: product.isOnSale,
         originalPrice: product.originalPrice?.toString() || '',
+        sizes: product.sizes || [],
+        colors: product.colors || [],
+        promotionType: (product as any).promotionType || 'none',
+        promotionValue: (product as any).promotionValue || '',
       });
       setImagePreview(product.image);
     }
@@ -122,6 +130,22 @@ export function AdminProductEdit() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
+      // Check if bucket exists first
+      const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+      
+      if (bucketError) {
+        throw new Error('Impossible de vérifier les buckets de stockage');
+      }
+
+      const productsBucket = buckets?.find(b => b.name === 'products');
+      if (!productsBucket) {
+        toast.error(
+          'Le bucket "products" n\'existe pas. Veuillez le créer dans votre dashboard Supabase.',
+          { duration: 6000 }
+        );
+        throw new Error('Bucket "products" not found. Please create it in Supabase Storage.');
+      }
+
       // Upload to Supabase Storage
       const { error } = await supabase.storage
         .from('products')
@@ -131,6 +155,20 @@ export function AdminProductEdit() {
         });
 
       if (error) {
+        // Provide more specific error messages
+        if (error.message.includes('Bucket not found')) {
+          toast.error(
+            'Le bucket "products" n\'existe pas. Créez-le dans Supabase Storage > Storage > New bucket',
+            { duration: 6000 }
+          );
+        } else if (error.message.includes('new row violates row-level security')) {
+          toast.error(
+            'Erreur de permissions. Vérifiez les politiques RLS du bucket.',
+            { duration: 6000 }
+          );
+        } else {
+          toast.error(`Erreur: ${error.message}`, { duration: 5000 });
+        }
         throw error;
       }
 
@@ -143,7 +181,7 @@ export function AdminProductEdit() {
       return publicUrl;
     } catch (error: any) {
       console.error('Error uploading image:', error);
-      toast.error('Erreur lors du téléchargement de l\'image');
+      // Error toast already shown above
       throw error;
     } finally {
       setUploading(false);
@@ -170,7 +208,11 @@ export function AdminProductEdit() {
       image: imageUrl,
       price: parseFloat(formData.price),
       originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-    });
+      sizes: formData.sizes,
+      colors: formData.colors,
+      promotionType: formData.promotionType === 'none' ? undefined : formData.promotionType,
+      promotionValue: formData.promotionType === 'none' ? undefined : formData.promotionValue,
+    } as any);
   };
 
   const handleDelete = () => {
@@ -261,24 +303,25 @@ export function AdminProductEdit() {
                 />
                 <div className="space-y-3">
                   {imagePreview && (
-                    <div className="relative w-full h-48 border-2 border-dashed border-slate-300 rounded-lg overflow-hidden">
+                    <div className="relative w-full h-96 border-2 border-dashed border-slate-300 rounded-lg overflow-hidden bg-slate-50">
                       <img
                         src={imagePreview}
                         alt="Preview"
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                       <button
                         type="button"
                         onClick={() => {
                           setImagePreview('');
                           setImageFile(null);
+                          setFormData({ ...formData, image: '' });
                           if (fileInputRef.current) {
                             fileInputRef.current.value = '';
                           }
                         }}
-                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-5 w-5" />
                       </button>
                     </div>
                   )}
@@ -301,21 +344,27 @@ export function AdminProductEdit() {
                       </>
                     )}
                   </Button>
-                  {!imagePreview && (
-                    <div className="text-sm text-slate-500 text-center">
-                      Ou utilisez une URL
-                    </div>
-                  )}
-                  {!imagePreview && (
-                    <Input
-                      id="image-url"
-                      placeholder="https://example.com/image.jpg"
-                      value={formData.image}
-                      onChange={(e) => {
-                        setFormData({ ...formData, image: e.target.value });
+                  <div className="text-sm text-slate-500 text-center pt-2 border-t">
+                    Ou utilisez une URL
+                  </div>
+                  <Input
+                    id="image-url"
+                    placeholder="https://example.com/image.jpg"
+                    value={formData.image}
+                    onChange={(e) => {
+                      setFormData({ ...formData, image: e.target.value });
+                      if (e.target.value && !imageFile) {
                         setImagePreview(e.target.value);
-                      }}
-                    />
+                      } else if (!e.target.value && !imageFile) {
+                        setImagePreview('');
+                      }
+                    }}
+                    disabled={!!imageFile}
+                  />
+                  {imageFile && (
+                    <p className="text-xs text-blue-600 text-center">
+                      Un fichier est sélectionné. L'URL sera ignorée.
+                    </p>
                   )}
                 </div>
               </div>
@@ -379,7 +428,224 @@ export function AdminProductEdit() {
               </div>
             </CardContent>
           </Card>
+
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle>Promotion</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="promotionType">Type de promotion</Label>
+                <select
+                  id="promotionType"
+                  value={formData.promotionType}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      promotionType: e.target.value as any,
+                      promotionValue: e.target.value === 'none' ? '' : formData.promotionValue,
+                    });
+                  }}
+                  className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                >
+                  <option value="none">Aucune promotion</option>
+                  <option value="buy2get1">Achetez 2, obtenez 1 gratuit</option>
+                  <option value="buy2">2 au prix de X</option>
+                  <option value="buy3">3 au prix de X</option>
+                  <option value="percentage">Réduction en pourcentage</option>
+                </select>
+              </div>
+
+              {formData.promotionType === 'buy2' && (
+                <div className="space-y-2">
+                  <Label htmlFor="promotionValue">Prix pour 2 articles (€)</Label>
+                  <Input
+                    id="promotionValue"
+                    type="number"
+                    step="0.01"
+                    value={formData.promotionValue}
+                    onChange={(e) => setFormData({ ...formData, promotionValue: e.target.value })}
+                    placeholder="Ex: 59.99"
+                  />
+                  <p className="text-xs text-slate-500">
+                    Les clients paieront ce prix pour 2 articles au lieu de {formData.price ? (parseFloat(formData.price) * 2).toFixed(2) : '0.00'} €
+                  </p>
+                </div>
+              )}
+
+              {formData.promotionType === 'buy3' && (
+                <div className="space-y-2">
+                  <Label htmlFor="promotionValue">Prix pour 3 articles (€)</Label>
+                  <Input
+                    id="promotionValue"
+                    type="number"
+                    step="0.01"
+                    value={formData.promotionValue}
+                    onChange={(e) => setFormData({ ...formData, promotionValue: e.target.value })}
+                    placeholder="Ex: 79.99"
+                  />
+                  <p className="text-xs text-slate-500">
+                    Les clients paieront ce prix pour 3 articles au lieu de {formData.price ? (parseFloat(formData.price) * 3).toFixed(2) : '0.00'} €
+                  </p>
+                </div>
+              )}
+
+              {formData.promotionType === 'percentage' && (
+                <div className="space-y-2">
+                  <Label htmlFor="promotionValue">Pourcentage de réduction (%)</Label>
+                  <Input
+                    id="promotionValue"
+                    type="number"
+                    step="1"
+                    min="1"
+                    max="100"
+                    value={formData.promotionValue}
+                    onChange={(e) => setFormData({ ...formData, promotionValue: e.target.value })}
+                    placeholder="Ex: 20"
+                  />
+                  <p className="text-xs text-slate-500">
+                    Réduction de {formData.promotionValue || '0'}% sur le prix ({formData.price ? (parseFloat(formData.price) * (1 - (parseFloat(formData.promotionValue || '0') / 100))).toFixed(2) : '0.00'} €)
+                  </p>
+                </div>
+              )}
+
+              {formData.promotionType === 'buy2get1' && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Offre spéciale:</strong> Les clients recevront 1 article gratuit pour chaque 2 articles achetés.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
+
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Tailles et Couleurs</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Sizes */}
+            <div className="space-y-3">
+              <Label>Tailles disponibles</Label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {formData.sizes.map((size, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                  >
+                    {size}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          sizes: formData.sizes.filter((_, i) => i !== index),
+                        });
+                      }}
+                      className="ml-2 text-blue-600 hover:text-blue-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <select
+                  value={sizeInput}
+                  onChange={(e) => setSizeInput(e.target.value)}
+                  className="flex h-10 w-48 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
+                >
+                  <option value="">Sélectionner une taille</option>
+                  <option value="S">S</option>
+                  <option value="M">M</option>
+                  <option value="L">L</option>
+                  <option value="XL">XL</option>
+                  <option value="XXL">XXL</option>
+                  <option value="One Size">One Size</option>
+                </select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (sizeInput && !formData.sizes.includes(sizeInput)) {
+                      setFormData({
+                        ...formData,
+                        sizes: [...formData.sizes, sizeInput],
+                      });
+                      setSizeInput('');
+                    }
+                  }}
+                  disabled={!sizeInput || formData.sizes.includes(sizeInput)}
+                >
+                  Ajouter
+                </Button>
+              </div>
+            </div>
+
+            {/* Colors */}
+            <div className="space-y-3">
+              <Label>Couleurs disponibles</Label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {formData.colors.map((color, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
+                  >
+                    {color}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          ...formData,
+                          colors: formData.colors.filter((_, i) => i !== index),
+                        });
+                      }}
+                      className="ml-2 text-purple-600 hover:text-purple-800"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Ex: Noir, Beige, Marron..."
+                  value={colorInput}
+                  onChange={(e) => setColorInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (colorInput.trim() && !formData.colors.includes(colorInput.trim())) {
+                        setFormData({
+                          ...formData,
+                          colors: [...formData.colors, colorInput.trim()],
+                        });
+                        setColorInput('');
+                      }
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (colorInput.trim() && !formData.colors.includes(colorInput.trim())) {
+                      setFormData({
+                        ...formData,
+                        colors: [...formData.colors, colorInput.trim()],
+                      });
+                      setColorInput('');
+                    }
+                  }}
+                  disabled={!colorInput.trim() || formData.colors.includes(colorInput.trim())}
+                >
+                  Ajouter
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card className="mt-6">
           <CardHeader>

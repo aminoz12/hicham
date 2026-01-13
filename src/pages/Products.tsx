@@ -3,22 +3,42 @@ import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ProductGrid from '@/components/ProductGrid';
 import FilterModal from '@/components/FilterModal';
-import { products } from '@/data/products';
+import { fetchAllProducts } from '@/services/productService';
 import { filterProducts, sortProducts, searchProducts } from '@/utils';
 import { Product, FilterOptions } from '@/types';
 
 const Products: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<FilterOptions>({});
   const [sortBy] = useState<string>('featured');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load products from Supabase
+  useEffect(() => {
+    const loadProducts = async () => {
+      setIsLoading(true);
+      try {
+        const products = await fetchAllProducts();
+        setAllProducts(products);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        // Fallback to empty array
+        setAllProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProducts();
+  }, []);
 
   // Get category from URL
-  const category = searchParams.get('category') as keyof typeof products[0] | null;
+  const category = searchParams.get('category') as ProductCategory | null;
   const search = searchParams.get('search');
 
   useEffect(() => {
@@ -38,7 +58,7 @@ const Products: React.FC = () => {
 
   // Filter and sort products
   useEffect(() => {
-    let result = products;
+    let result = allProducts;
 
     // Apply search
     if (searchQuery.trim()) {
