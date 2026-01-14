@@ -1,39 +1,37 @@
-# Quick Setup: Supabase Storage Bucket
+# 🚀 Configuration Rapide: Bucket Supabase Storage
 
-## Error: "Bucket not found"
+## ⚠️ Erreur: "Bucket not found"
 
-If you're seeing this error, you need to create the storage bucket in Supabase.
+Si vous voyez cette erreur, vous devez créer le bucket de stockage dans Supabase.
 
-## Quick Setup (2 minutes)
+## ⚡ Configuration Rapide (2 minutes)
 
-### Step 1: Create the Bucket
+### Étape 1: Créer le Bucket
 
-1. Go to https://supabase.com/dashboard
-2. Select your project
-3. Click **Storage** in the left sidebar
-4. Click **New bucket** button
-5. Fill in:
-   - **Name**: `products` (exactly this name, lowercase)
-   - **Public bucket**: ✅ **Check this box** (important!)
-   - Click **Create bucket**
+1. Allez sur **https://supabase.com/dashboard**
+2. Sélectionnez votre projet
+3. Cliquez sur **Storage** dans le menu de gauche
+4. Cliquez sur le bouton **New bucket**
+5. Remplissez:
+   - **Name**: `products` (exactement ce nom, en minuscules)
+   - **Public bucket**: ✅ **COCHEZ cette case** (important!)
+   - Cliquez sur **Create bucket**
 
-### Step 2: Set Up Policies (Optional but Recommended)
+### Étape 2: Configurer les Politiques (Recommandé)
 
-After creating the bucket, click on it, then go to **Policies** tab.
+Après avoir créé le bucket, cliquez dessus, puis allez dans l'onglet **Policies**.
 
-#### Quick Policy (Allows authenticated uploads):
+Cliquez sur **New Policy** → **For full customization**
 
-Click **New Policy** → **For full customization**
-
-Paste this SQL:
+Collez ce SQL:
 
 ```sql
--- Allow public read access
+-- Permettre la lecture publique
 CREATE POLICY "Public Access"
 ON storage.objects FOR SELECT
 USING (bucket_id = 'products');
 
--- Allow authenticated users to upload
+-- Permettre l'upload pour les utilisateurs authentifiés
 CREATE POLICY "Authenticated users can upload"
 ON storage.objects FOR INSERT
 WITH CHECK (
@@ -41,7 +39,7 @@ WITH CHECK (
   auth.role() = 'authenticated'
 );
 
--- Allow authenticated users to update
+-- Permettre la mise à jour pour les utilisateurs authentifiés
 CREATE POLICY "Authenticated users can update"
 ON storage.objects FOR UPDATE
 USING (
@@ -49,7 +47,7 @@ USING (
   auth.role() = 'authenticated'
 );
 
--- Allow authenticated users to delete
+-- Permettre la suppression pour les utilisateurs authentifiés
 CREATE POLICY "Authenticated users can delete"
 ON storage.objects FOR DELETE
 USING (
@@ -58,35 +56,41 @@ USING (
 );
 ```
 
-Click **Review** → **Save policy**
+Cliquez sur **Review** → **Save policy**
 
-### Step 3: Test
+### Étape 3: Tester
 
-1. Go to `/admin/products/new`
-2. Try uploading an image
-3. It should work now!
+1. Allez sur `/admin/products/new`
+2. Essayez d'uploader une image
+3. Ça devrait fonctionner maintenant! ✅
 
-## Alternative: Use URL Input
+## 🔄 Alternative: Utiliser l'URL d'Image
 
-If you don't want to set up storage right now, you can still use the URL input option:
-- After clicking "Télécharger une image", scroll down
-- You'll see "Ou utilisez une URL" option
-- Enter an image URL directly
+Si vous ne voulez pas configurer le stockage maintenant, vous pouvez toujours utiliser l'option URL:
+- Après avoir cliqué sur "Télécharger une image", descendez
+- Vous verrez l'option "Ou utilisez une URL"
+- Entrez une URL d'image directement
 
-## Troubleshooting
+## 🐛 Dépannage
 
-### Still getting "Bucket not found"?
-- Make sure the bucket name is exactly `products` (lowercase, no spaces)
-- Refresh the page after creating the bucket
-- Check that the bucket is set to **Public**
+### Toujours "Bucket not found"?
+- Assurez-vous que le nom du bucket est exactement `products` (minuscules, pas d'espaces)
+- Vérifiez que vous êtes dans le bon projet Supabase
+- Rafraîchissez la page après avoir créé le bucket
 
-### Getting permission errors?
-- Make sure you've set up the storage policies
-- Check that your user is authenticated
-- Verify the bucket is public
+### Erreur de permissions?
+- Vérifiez que vous avez créé les politiques comme indiqué ci-dessus
+- Assurez-vous que le bucket est **Public**
 
-### Images not displaying?
-- Check that the bucket is set to **Public**
-- Verify the public URL is generated correctly
-- Check browser console for CORS errors
+### Images ne s'affichent pas?
+- Vérifiez que le bucket est marqué comme **Public bucket**
+- Vérifiez que la politique "Public Access" est active
+- Vérifiez la console du navigateur pour les erreurs CORS
 
+## 📸 Capture d'écran des étapes
+
+1. **Dashboard Supabase** → **Storage**
+2. **New bucket** → Nom: `products` → ✅ Public → **Create**
+3. Cliquez sur le bucket → **Policies** → **New Policy** → Collez le SQL ci-dessus
+
+C'est tout! 🎉

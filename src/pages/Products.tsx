@@ -24,8 +24,13 @@ const Products: React.FC = () => {
     const loadProducts = async () => {
       setIsLoading(true);
       try {
+        console.log('Loading products from Supabase...');
         const products = await fetchAllProducts();
+        console.log('Products loaded:', products.length, products);
         setAllProducts(products);
+        if (products.length === 0) {
+          console.warn('No products found in database. Make sure you have created products in the admin panel or run the migration script.');
+        }
       } catch (error) {
         console.error('Error loading products:', error);
         // Fallback to empty array
@@ -72,7 +77,7 @@ const Products: React.FC = () => {
     result = sortProducts(result, sortBy);
 
     setFilteredProducts(result);
-  }, [filters, sortBy, searchQuery]);
+  }, [filters, sortBy, searchQuery, allProducts]);
 
   const handleFilterChange = (newFilters: Partial<FilterOptions>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));

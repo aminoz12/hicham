@@ -6,7 +6,6 @@ import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { formatPrice, calculateItemPrice } from '@/utils';
 import { toast } from 'react-hot-toast';
-import { useTranslation } from '@/hooks/useTranslation';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Cart: React.FC = () => {
@@ -21,8 +20,6 @@ const Cart: React.FC = () => {
   } = useCartStore();
   
   const { toggleCart } = useUIStore();
-  const { t } = useTranslation('products');
-  const { t: tCommon } = useTranslation('common');
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {

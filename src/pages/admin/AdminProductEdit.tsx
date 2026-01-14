@@ -42,6 +42,11 @@ export function AdminProductEdit() {
       toast.success(isNew ? 'Produit créé avec succès' : 'Produit mis à jour');
       navigate('/admin/products');
     },
+    onError: (error: any) => {
+      console.error('Error saving product:', error);
+      const errorMessage = error?.message || String(error) || 'Erreur inconnue';
+      toast.error(`Erreur lors de la sauvegarde: ${errorMessage}`, { duration: 8000 });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -130,49 +135,95 @@ export function AdminProductEdit() {
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      // Check if bucket exists first
-      const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
-      
-      if (bucketError) {
-        throw new Error('Impossible de vérifier les buckets de stockage');
-      }
-
-      const productsBucket = buckets?.find(b => b.name === 'products');
-      if (!productsBucket) {
-        toast.error(
-          'Le bucket "products" n\'existe pas. Veuillez le créer dans votre dashboard Supabase.',
-          { duration: 6000 }
-        );
-        throw new Error('Bucket "products" not found. Please create it in Supabase Storage.');
-      }
-
-      // Upload to Supabase Storage
-      const { error } = await supabase.storage
+      // Try to upload directly - this will fail if bucket doesn't exist
+      const { error: uploadError } = await supabase.storage
         .from('products')
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
         });
 
-      if (error) {
-        // Provide more specific error messages
-        if (error.message.includes('Bucket not found')) {
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        
+        // Check if it's a bucket not found error
+        const errorMessage = uploadError.message || String(uploadError) || '';
+        const isBucketNotFound = 
+          errorMessage.includes('Bucket not found') ||
+          errorMessage.includes('not found') ||
+          errorMessage.includes('does not exist') ||
+          errorMessage.includes('No such bucket');
+
+        if (isBucketNotFound) {
+          // Try to create the bucket automatically first
+          console.log('Bucket "products" not found, attempting to create it...');
+          const { error: createError } = await supabase.storage.createBucket('products', {
+            public: true,
+            fileSizeLimit: 5242880, // 5MB
+            allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+          });
+
+          if (createError) {
+            console.error('Error creating bucket:', createError);
+            const errorMsg = `
+❌ Le bucket "products" n'existe pas dans Supabase Storage.
+
+📋 INSTRUCTIONS RAPIDES:
+1. Allez sur https://supabase.com/dashboard
+2. Sélectionnez votre projet
+3. Cliquez sur "Storage" dans le menu de gauche
+4. Cliquez sur "New bucket"
+5. Nom: "products" (exactement, en minuscules)
+6. ✅ Cochez "Public bucket"
+7. Cliquez sur "Create bucket"
+8. Rafraîchissez cette page et réessayez
+
+💡 Voir QUICK_STORAGE_SETUP.md pour plus de détails.
+            `.trim();
+            
+            toast.error(errorMsg, { 
+              duration: 12000,
+              style: { whiteSpace: 'pre-line', maxWidth: '600px' }
+            });
+            throw new Error('Bucket "products" not found. Please create it in Supabase Storage.');
+          } else {
+            console.log('Bucket "products" created successfully! Retrying upload...');
+            toast.success('Bucket "products" créé automatiquement! Upload en cours...', { duration: 3000 });
+            
+            // Retry upload after creating bucket
+            const { error: retryError } = await supabase.storage
+              .from('products')
+              .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: false
+              });
+
+            if (retryError) {
+              console.error('Retry upload error:', retryError);
+              toast.error(`Erreur lors de l'upload: ${retryError.message}`, { duration: 6000 });
+              throw retryError;
+            }
+            
+            // Get public URL for retry
+            const { data: { publicUrl } } = supabase.storage
+              .from('products')
+              .getPublicUrl(filePath);
+            
+            toast.success('Image téléchargée avec succès');
+            return publicUrl;
+          }
+        } else if (errorMessage.includes('new row violates row-level security') || errorMessage.includes('RLS')) {
           toast.error(
-            'Le bucket "products" n\'existe pas. Créez-le dans Supabase Storage > Storage > New bucket',
-            { duration: 6000 }
-          );
-        } else if (error.message.includes('new row violates row-level security')) {
-          toast.error(
-            'Erreur de permissions. Vérifiez les politiques RLS du bucket.',
-            { duration: 6000 }
+            '❌ Erreur de permissions. Vérifiez les politiques RLS du bucket. Exécutez scripts/setup-storage-policies.sql',
+            { duration: 8000 }
           );
         } else {
-          toast.error(`Erreur: ${error.message}`, { duration: 5000 });
+          toast.error(`Erreur: ${errorMessage}`, { duration: 6000 });
         }
-        throw error;
+        throw uploadError;
       }
 
-      // Get public URL
+      // Upload successful, get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('products')
         .getPublicUrl(filePath);

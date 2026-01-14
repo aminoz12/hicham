@@ -14,7 +14,7 @@ function mapSupabaseProductToProduct(supabaseProduct: any): Product {
     originalPrice: supabaseProduct.original_price ? parseFloat(supabaseProduct.original_price) : undefined,
     image: supabaseProduct.image,
     images: supabaseProduct.images || [supabaseProduct.image],
-    category: supabaseProduct.category?.slug || supabaseProduct.category_slug || 'hijabs',
+    category: supabaseProduct.category?.slug || supabaseProduct.category_slug || (supabaseProduct.category_id ? 'hijabs' : 'hijabs'),
     subcategory: supabaseProduct.subcategory,
     description: supabaseProduct.description || '',
     descriptionAr: supabaseProduct.description_ar || supabaseProduct.description || '',
@@ -72,7 +72,9 @@ export async function fetchAllProducts(): Promise<Product[]> {
       throw error;
     }
 
+    console.log('Raw data from Supabase:', data?.length || 0, data);
     const products = (data || []).map(mapSupabaseProductToProduct);
+    console.log('Mapped products:', products.length);
     return products;
   } catch (error: any) {
     // Gérer les erreurs de certificat SSL
@@ -285,14 +287,51 @@ export async function saveProduct(product: Partial<Product>): Promise<Product> {
     // Obtenir l'ID de la catégorie
     let categoryId: string | null = null;
     if (product.category) {
-      const { data: category } = await supabase
+      const { data: category, error: categoryError } = await supabase
         .from('categories')
         .select('id')
         .eq('slug', product.category)
         .single();
       
+      if (categoryError) {
+        console.error('Error fetching category:', categoryError);
+      }
+      
       categoryId = category?.id || null;
     }
+
+    // Générer un slug unique (seulement pour les nouveaux produits)
+    let slug: string = '';
+    const timestamp = Date.now();
+    const randomStr = Math.random().toString(36).substring(2, 8);
+    
+    if (product.id) {
+      // Pour la mise à jour, récupérer le slug existant
+      const { data: existingProduct } = await supabase
+        .from('products')
+        .select('slug')
+        .eq('id', product.id)
+        .single();
+      slug = existingProduct?.slug || '';
+    }
+    
+    // Si pas de slug (nouveau produit ou produit existant sans slug), en générer un
+    if (!slug) {
+      const generateSlug = (text: string): string => {
+        return text
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      };
+
+      const baseSlug = generateSlug(product.name || 'product');
+      slug = `${baseSlug}-${timestamp}-${randomStr}`;
+    }
+
+    // Générer un SKU unique si pas fourni
+    const sku = (product as any).sku || `PROD-${timestamp}-${randomStr}`;
 
     const productData: any = {
       name: product.name,
@@ -300,6 +339,8 @@ export async function saveProduct(product: Partial<Product>): Promise<Product> {
       name_fr: product.nameFr || product.name,
       name_it: product.nameIt || product.name,
       name_es: product.nameEs || product.name,
+      slug: slug,
+      sku: sku,
       price: product.price,
       original_price: product.originalPrice || null,
       image: product.image,
