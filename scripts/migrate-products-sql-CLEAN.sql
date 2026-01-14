@@ -1,5 +1,7 @@
 -- ============================================
--- Script SQL pour migrer les produits statiques vers Supabase
+-- Script SQL PROPRE pour migrer les produits vers Supabase
+-- 
+-- Ce script supprime d'abord les anciennes fonctions pour éviter les conflits
 -- 
 -- Instructions:
 -- 1. Assurez-vous que les catégories existent (voir SUPABASE_SCHEMA.sql)
@@ -7,41 +9,43 @@
 -- 3. Exécutez le script
 -- ============================================
 
--- Note: Ce script contient des exemples de produits
--- Pour migrer tous les produits, utilisez le script TypeScript migrate-products-to-supabase.ts
--- ou adaptez ce script SQL avec tous vos produits
+-- Activer l'extension uuid-ossp si pas déjà activée
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Supprimer l'ancienne fonction si elle existe (au cas où elle utilise unaccent)
+-- Supprimer les anciennes fonctions si elles existent
 DROP FUNCTION IF EXISTS generate_slug(TEXT, TEXT);
+DROP FUNCTION IF EXISTS generate_uuid_from_id(TEXT);
 
 -- Fonction helper pour générer un slug (sans dépendre de unaccent)
 CREATE OR REPLACE FUNCTION generate_slug(name TEXT, id TEXT)
 RETURNS TEXT AS $$
+DECLARE
+  result TEXT;
 BEGIN
-  -- Convertir en minuscules et remplacer les caractères spéciaux
-  RETURN lower(
-    regexp_replace(
-      regexp_replace(
-        regexp_replace(
-          regexp_replace(
-            regexp_replace(
-              regexp_replace(name || '-' || id, '[àáâãäå]', 'a', 'gi'),
-              '[èéêë]', 'e', 'gi'
-            ),
-            '[ìíîï]', 'i', 'gi'
-          ),
-          '[òóôõö]', 'o', 'gi'
-        ),
-        '[ùúûü]', 'u', 'gi'
-      ),
-      '[^a-z0-9]+', '-', 'g'
-    )
-  );
+  -- Commencer avec le nom et l'ID
+  result := name || '-' || id;
+  
+  -- Convertir en minuscules
+  result := lower(result);
+  
+  -- Remplacer les caractères accentués
+  result := regexp_replace(result, '[àáâãäå]', 'a', 'gi');
+  result := regexp_replace(result, '[èéêë]', 'e', 'gi');
+  result := regexp_replace(result, '[ìíîï]', 'i', 'gi');
+  result := regexp_replace(result, '[òóôõö]', 'o', 'gi');
+  result := regexp_replace(result, '[ùúûü]', 'u', 'gi');
+  result := regexp_replace(result, '[ç]', 'c', 'gi');
+  result := regexp_replace(result, '[ñ]', 'n', 'gi');
+  
+  -- Remplacer tous les caractères non alphanumériques par des tirets
+  result := regexp_replace(result, '[^a-z0-9]+', '-', 'g');
+  
+  -- Supprimer les tirets en début et fin
+  result := trim(both '-' from result);
+  
+  RETURN result;
 END;
 $$ LANGUAGE plpgsql;
-
--- Supprimer l'ancienne fonction si elle existe
-DROP FUNCTION IF EXISTS generate_uuid_from_id(TEXT);
 
 -- Fonction helper pour générer un UUID déterministe à partir d'un ID
 CREATE OR REPLACE FUNCTION generate_uuid_from_id(id TEXT)
@@ -52,9 +56,6 @@ BEGIN
   RETURN uuid_generate_v5('6ba7b810-9dad-11d1-80b4-00c04fd430c8'::uuid, id);
 END;
 $$ LANGUAGE plpgsql;
-
--- Exemple: Insérer quelques produits
--- Remplacez ces exemples par vos vrais produits depuis src/data/products.ts
 
 -- Produit 1: Abaya Beige
 INSERT INTO products (
@@ -193,11 +194,6 @@ ON CONFLICT (sku) DO UPDATE SET
   price = EXCLUDED.price,
   image = EXCLUDED.image,
   updated_at = NOW();
-
--- Note: Pour migrer tous les produits, vous pouvez:
--- 1. Utiliser le script TypeScript (recommandé)
--- 2. Répéter les INSERT ci-dessus pour chaque produit
--- 3. Créer un script personnalisé qui lit src/data/products.ts et génère les INSERT
 
 -- Vérification
 SELECT 

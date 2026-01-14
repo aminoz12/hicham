@@ -87,9 +87,29 @@ async function migrateProduct(product: any, index: number) {
     // Générer un slug unique
     const slug = generateSlug(product.name, product.id);
 
+    // Générer un UUID déterministe à partir de l'ID du produit
+    // Utilise crypto pour générer un UUID v5 déterministe
+    const generateUUID = (id: string): string => {
+      // Pour un UUID v5 déterministe, on utilise un namespace fixe
+      // En TypeScript, on peut utiliser crypto.randomUUID() mais pour la cohérence,
+      // on génère un UUID basé sur l'ID
+      const namespace = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+      // Simple hash pour générer un UUID (approximation)
+      // En production, utilisez une bibliothèque UUID appropriée
+      const hash = require('crypto').createHash('sha1').update(namespace + id).digest('hex');
+      return [
+        hash.substring(0, 8),
+        hash.substring(8, 12),
+        '5' + hash.substring(13, 16),
+        ((parseInt(hash.substring(16, 18), 16) & 0x3f) | 0x80).toString(16) + hash.substring(18, 20),
+        hash.substring(20, 32)
+      ].join('-');
+    };
+
     // Préparer les données pour Supabase
     const productData = {
-      id: product.id, // Utiliser l'ID existant ou générer un UUID
+      id: generateUUID(product.id), // Générer un UUID à partir de l'ID
+      sku: `PROD-${product.id}`, // Garder l'ID original dans SKU
       name: product.name,
       name_ar: product.nameAr || product.name,
       name_fr: product.nameFr || product.name,
@@ -121,11 +141,11 @@ async function migrateProduct(product: any, index: number) {
       tags: product.tags || [],
     };
 
-    // Vérifier si le produit existe déjà
+    // Vérifier si le produit existe déjà (par SKU)
     const { data: existing } = await supabase
       .from('products')
       .select('id')
-      .eq('id', product.id)
+      .eq('sku', `PROD-${product.id}`)
       .single();
 
     if (existing) {
@@ -133,7 +153,7 @@ async function migrateProduct(product: any, index: number) {
       const { error } = await supabase
         .from('products')
         .update(productData)
-        .eq('id', product.id);
+        .eq('sku', `PROD-${product.id}`);
 
       if (error) {
         console.error(`❌ Erreur lors de la mise à jour de ${product.name}:`, error);

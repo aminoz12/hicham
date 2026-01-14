@@ -37,7 +37,8 @@ function mapSupabaseProductToProduct(supabaseProduct: any): Product {
 // Récupérer tous les produits
 export async function fetchAllProducts(): Promise<Product[]> {
   try {
-    const { data, error } = await supabase
+    // Essayer d'abord avec la relation category
+    let { data, error } = await supabase
       .from('products')
       .select(`
         *,
@@ -45,24 +46,51 @@ export async function fetchAllProducts(): Promise<Product[]> {
       `)
       .order('created_at', { ascending: false });
 
+    // Si erreur de relation, essayer sans relation
     if (error) {
+      const errorMsg = error?.message || String(error) || '';
+      if (errorMsg.includes('relation') || errorMsg.includes('foreign key')) {
+        console.warn('Category relation error, trying without relation:', errorMsg);
+        const result = await supabase
+          .from('products')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        data = result.data;
+        error = result.error;
+      }
+    }
+
+    if (error) {
+      // Gérer les erreurs de certificat SSL
+      const errorMessage = error?.message || String(error) || '';
+      if (errorMessage.includes('certificate') || errorMessage.includes('SSL') || errorMessage.includes('ERR_PROXY')) {
+        console.error('SSL/Certificate error connecting to Supabase. Please check your network/proxy settings.');
+        return [];
+      }
       console.error('Error fetching products:', error);
       throw error;
     }
 
-    return (data || []).map(mapSupabaseProductToProduct);
-  } catch (error) {
+    const products = (data || []).map(mapSupabaseProductToProduct);
+    return products;
+  } catch (error: any) {
+    // Gérer les erreurs de certificat SSL
+    const errorMessage = error?.message || String(error) || '';
+    if (errorMessage.includes('certificate') || errorMessage.includes('SSL') || errorMessage.includes('ERR_PROXY')) {
+      console.error('SSL/Certificate error connecting to Supabase. Please check your network/proxy settings.');
+      return [];
+    }
     console.error('Error in fetchAllProducts:', error);
-    // Fallback vers les produits statiques en cas d'erreur
-    const { sampleProducts } = await import('@/data/products');
-    return sampleProducts;
+    return [];
   }
 }
 
-// Récupérer un produit par ID
+// Récupérer un produit par ID (peut être UUID, SKU, ou slug)
 export async function fetchProductById(id: string): Promise<Product | null> {
   try {
-    const { data, error } = await supabase
+    // Essayer d'abord par ID (UUID)
+    let { data, error } = await supabase
       .from('products')
       .select(`
         *,
@@ -71,13 +99,79 @@ export async function fetchProductById(id: string): Promise<Product | null> {
       .eq('id', id)
       .single();
 
-    if (error) {
-      console.error('Error fetching product:', error);
-      return null;
+    // Si erreur de relation, essayer sans relation
+    const errorMessage = error?.message || String(error) || '';
+    if (error && (errorMessage.includes('relation') || errorMessage.includes('foreign key'))) {
+      console.warn('Category relation error, trying without relation:', errorMessage);
+      const result = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      data = result.data;
+      error = result.error;
     }
 
-    return data ? mapSupabaseProductToProduct(data) : null;
-  } catch (error) {
+    if (!error && data) {
+      return mapSupabaseProductToProduct(data);
+    }
+
+    // Si pas trouvé par ID, essayer par SKU (ex: "PROD-19")
+    if (error && (error.code === 'PGRST116' || error.message?.includes('No rows'))) {
+      const { data: dataBySku, error: errorBySku } = await supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(slug, name)
+        `)
+        .eq('sku', id)
+        .maybeSingle();
+
+      if (!errorBySku && dataBySku) {
+        return mapSupabaseProductToProduct(dataBySku);
+      }
+
+      // Si l'ID est un nombre (ancien format), essayer avec "PROD-" prefix
+      if (/^\d+$/.test(id)) {
+        const sku = `PROD-${id}`;
+        const { data: dataBySku2, error: errorBySku2 } = await supabase
+          .from('products')
+          .select(`
+            *,
+            category:categories(slug, name)
+          `)
+          .eq('sku', sku)
+          .maybeSingle();
+
+        if (!errorBySku2 && dataBySku2) {
+          return mapSupabaseProductToProduct(dataBySku2);
+        }
+      }
+
+      // Essayer par slug
+      const { data: dataBySlug, error: errorBySlug } = await supabase
+        .from('products')
+        .select(`
+          *,
+          category:categories(slug, name)
+        `)
+        .eq('slug', id)
+        .maybeSingle();
+
+      if (!errorBySlug && dataBySlug) {
+        return mapSupabaseProductToProduct(dataBySlug);
+      }
+    }
+
+    return null;
+  } catch (error: any) {
+    // Gérer les erreurs de certificat SSL
+    const errorMessage = error?.message || String(error) || '';
+    if (errorMessage.includes('certificate') || errorMessage.includes('SSL') || errorMessage.includes('ERR_PROXY')) {
+      console.error('SSL/Certificate error connecting to Supabase. Please check your network/proxy settings.');
+      return null;
+    }
     console.error('Error in fetchProductById:', error);
     return null;
   }
@@ -110,7 +204,8 @@ export async function fetchProductsByCategory(category: ProductCategory): Promis
 // Récupérer les produits en vedette
 export async function fetchFeaturedProducts(limit: number = 8): Promise<Product[]> {
   try {
-    const { data, error } = await supabase
+    // Essayer d'abord avec la relation category
+    let { data, error } = await supabase
       .from('products')
       .select(`
         *,
@@ -120,13 +215,41 @@ export async function fetchFeaturedProducts(limit: number = 8): Promise<Product[
       .order('created_at', { ascending: false })
       .limit(limit);
 
+    // Si erreur de relation, essayer sans relation
+    const errorMessage = error?.message || String(error) || '';
+    if (error && (errorMessage.includes('relation') || errorMessage.includes('foreign key'))) {
+      console.warn('Category relation error, trying without relation:', errorMessage);
+      const result = await supabase
+        .from('products')
+        .select('*')
+        .or('is_new.eq.true,is_best_seller.eq.true,is_featured.eq.true')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      
+      data = result.data;
+      error = result.error;
+    }
+
     if (error) {
+      // Gérer les erreurs de certificat SSL
+      const errorMsg = error?.message || String(error) || '';
+      if (errorMsg.includes('certificate') || errorMsg.includes('SSL') || errorMsg.includes('ERR_PROXY')) {
+        console.error('SSL/Certificate error connecting to Supabase. Please check your network/proxy settings.');
+        return [];
+      }
       console.error('Error fetching featured products:', error);
       throw error;
     }
 
-    return (data || []).map(mapSupabaseProductToProduct);
-  } catch (error) {
+    const products = (data || []).map(mapSupabaseProductToProduct);
+    return products;
+  } catch (error: any) {
+    // Gérer les erreurs de certificat SSL
+    const errorMessage = error?.message || String(error) || '';
+    if (errorMessage.includes('certificate') || errorMessage.includes('SSL') || errorMessage.includes('ERR_PROXY')) {
+      console.error('SSL/Certificate error connecting to Supabase. Please check your network/proxy settings.');
+      return [];
+    }
     console.error('Error in fetchFeaturedProducts:', error);
     return [];
   }

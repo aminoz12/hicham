@@ -9,6 +9,8 @@ import Footer from '@/components/Footer';
 import Home from '@/pages/Home';
 import Products from '@/pages/Products';
 import ProductDetail from '@/pages/ProductDetail';
+import Checkout from '@/pages/Checkout';
+import CheckoutSuccess from '@/pages/CheckoutSuccess';
 import Cart from '@/components/Cart';
 import MobileMenu from '@/components/MobileMenu';
 import SearchModal from '@/components/SearchModal';
@@ -155,6 +157,20 @@ function App() {
               <>
                 <Header />
                 <Products />
+                <Footer />
+              </>
+            } />
+            <Route path="/checkout" element={
+              <>
+                <Header />
+                <Checkout />
+                <Footer />
+              </>
+            } />
+            <Route path="/checkout/success" element={
+              <>
+                <Header />
+                <CheckoutSuccess />
                 <Footer />
               </>
             } />

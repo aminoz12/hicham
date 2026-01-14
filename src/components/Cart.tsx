@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, Trash2, ShoppingBag, MessageCircle, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { X, Plus, Minus, Trash2, ShoppingBag, CreditCard, ArrowRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { formatPrice, calculateItemPrice } from '@/utils';
@@ -10,6 +10,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Cart: React.FC = () => {
+  const navigate = useNavigate();
   const { 
     items, 
     total, 
@@ -42,36 +43,15 @@ const Cart: React.FC = () => {
     toast.success('Cart cleared');
   };
 
-  const handleWhatsAppOrder = () => {
+  const handleCheckout = () => {
     if (items.length === 0) {
       toast.error('Your cart is empty');
       return;
     }
 
-    // Create short order message
-    let message = `🛍️ *${tCommon('newOrder')}*\n\n`;
-    
-    items.forEach((item, index) => {
-      message += `${index + 1}. *${item.product.name}*\n`;
-      message += `   ${item.selectedColor} • ${item.selectedSize} • Qty: ${item.quantity}\n`;
-      message += `   ${formatPrice(item.product.price * item.quantity)}\n\n`;
-    });
-    
-    message += `💰 *${tCommon('totalAmount')}: ${formatPrice(total)}*\n\n`;
-    message += `📞 ${tCommon('pleaseConfirm')}.`;
-    
-    // Encode message for URL
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/33626157421?text=${encodedMessage}`;
-    
-    // Open WhatsApp
-    window.open(whatsappUrl, '_blank');
-    
-    // Show success message
-    toast.success('Opening WhatsApp to place your order!');
-    
-    // Close cart
+    // Close cart and navigate to checkout
     toggleCart();
+    navigate('/checkout');
   };
 
   return (
@@ -223,11 +203,11 @@ const Cart: React.FC = () => {
             {/* Action Buttons */}
             <div className="space-y-3">
               <button
-                onClick={handleWhatsAppOrder}
-                className="btn-primary w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700"
+                onClick={handleCheckout}
+                className="btn-primary w-full flex items-center justify-center space-x-2"
               >
-                <MessageCircle className="h-4 w-4" />
-                <span>{t('orderViaWhatsApp')}</span>
+                <CreditCard className="h-4 w-4" />
+                <span>Proceed to Checkout</span>
               </button>
               
               <div className="flex space-x-2">
@@ -249,7 +229,7 @@ const Cart: React.FC = () => {
 
             {/* Order Info */}
             <div className="text-xs text-gray-500 text-center">
-              📱 Order via WhatsApp • Free shipping on orders over $75
+              💳 Secure payment with SumUp • Free shipping on orders over €75
             </div>
           </motion.div>
         )}

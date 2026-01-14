@@ -5,7 +5,7 @@ import ProductGrid from '@/components/ProductGrid';
 import FilterModal from '@/components/FilterModal';
 import { fetchAllProducts } from '@/services/productService';
 import { filterProducts, sortProducts, searchProducts } from '@/utils';
-import { Product, FilterOptions } from '@/types';
+import { Product, FilterOptions, ProductCategory } from '@/types';
 
 const Products: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +17,7 @@ const Products: React.FC = () => {
   const [viewMode] = useState<'grid' | 'list'>('grid');
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [, setIsLoading] = useState(true);
 
   // Load products from Supabase
   useEffect(() => {
@@ -93,7 +93,7 @@ const Products: React.FC = () => {
   ).length + (searchQuery ? 1 : 0);
 
   // Get all unique categories from products
-  const allCategories = ['All', ...new Set(products.map(p => p.category))];
+  const allCategories = ['All', ...new Set(allProducts.map((p: Product) => p.category))] as string[];
   const currentCategory = category || 'All';
 
   return (
@@ -130,7 +130,7 @@ const Products: React.FC = () => {
             {/* Middle: Categories */}
             <div className="flex-1 flex items-center justify-center overflow-x-auto px-4">
               <div className="flex items-center gap-4 whitespace-nowrap">
-                {allCategories.map((cat) => (
+                {allCategories.map((cat: string) => (
                   <button
                     key={cat}
                     onClick={() => {

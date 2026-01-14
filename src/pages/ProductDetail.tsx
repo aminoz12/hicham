@@ -157,7 +157,7 @@ const ProductDetail: React.FC = () => {
             {/* Thumbnail Images */}
             {product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-4">
-                {product.images.map((image, index) => (
+                {product.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -257,7 +257,7 @@ const ProductDetail: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('color')}: {selectedColor}</h3>
               <div className="flex space-x-3">
-                {product.colors.map((color) => (
+                {product.colors.map((color: string) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -277,7 +277,7 @@ const ProductDetail: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('size')}: {selectedSize}</h3>
               <div className="flex space-x-3">
-                {product.sizes.map((size) => (
+                {product.sizes.map((size: string) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -369,7 +369,7 @@ const ProductDetail: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('tags')}</h3>
               <div className="flex flex-wrap gap-2">
-                {product.tags.map((tag) => (
+                {product.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"

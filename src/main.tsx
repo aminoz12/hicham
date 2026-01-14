@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { HelmetProvider } from 'react-helmet-async'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from './contexts/AuthContext'
+import ErrorBoundary from './components/ErrorBoundary'
 import App from './App.tsx'
 import './index.css'
 
@@ -22,40 +23,42 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <BrowserRouter>
-            <App />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-                borderRadius: '12px',
-                padding: '16px',
-                fontSize: '14px',
-                fontWeight: '500',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#10B981',
-                  secondary: '#fff',
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#EF4444',
-                  secondary: '#fff',
-                },
-              },
-            }}
-          />
-          </BrowserRouter>
-        </AuthProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <BrowserRouter>
+              <App />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                  },
+                  success: {
+                    iconTheme: {
+                      primary: '#10B981',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    iconTheme: {
+                      primary: '#EF4444',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+            </BrowserRouter>
+          </AuthProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 )

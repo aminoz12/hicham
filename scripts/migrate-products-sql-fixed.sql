@@ -1,5 +1,5 @@
 -- ============================================
--- Script SQL pour migrer les produits statiques vers Supabase
+-- Script SQL CORRIGÉ pour migrer les produits statiques vers Supabase
 -- 
 -- Instructions:
 -- 1. Assurez-vous que les catégories existent (voir SUPABASE_SCHEMA.sql)
@@ -7,12 +7,8 @@
 -- 3. Exécutez le script
 -- ============================================
 
--- Note: Ce script contient des exemples de produits
--- Pour migrer tous les produits, utilisez le script TypeScript migrate-products-to-supabase.ts
--- ou adaptez ce script SQL avec tous vos produits
-
--- Supprimer l'ancienne fonction si elle existe (au cas où elle utilise unaccent)
-DROP FUNCTION IF EXISTS generate_slug(TEXT, TEXT);
+-- Activer l'extension unaccent si disponible (optionnel)
+-- CREATE EXTENSION IF NOT EXISTS unaccent;
 
 -- Fonction helper pour générer un slug (sans dépendre de unaccent)
 CREATE OR REPLACE FUNCTION generate_slug(name TEXT, id TEXT)
@@ -23,16 +19,10 @@ BEGIN
     regexp_replace(
       regexp_replace(
         regexp_replace(
-          regexp_replace(
-            regexp_replace(
-              regexp_replace(name || '-' || id, '[àáâãäå]', 'a', 'gi'),
-              '[èéêë]', 'e', 'gi'
-            ),
-            '[ìíîï]', 'i', 'gi'
-          ),
-          '[òóôõö]', 'o', 'gi'
+          regexp_replace(name || '-' || id, '[àáâãäå]', 'a', 'gi'),
+          '[èéêë]', 'e', 'gi'
         ),
-        '[ùúûü]', 'u', 'gi'
+        '[ìíîï]', 'i', 'gi'
       ),
       '[^a-z0-9]+', '-', 'g'
     )
@@ -40,10 +30,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Supprimer l'ancienne fonction si elle existe
-DROP FUNCTION IF EXISTS generate_uuid_from_id(TEXT);
-
 -- Fonction helper pour générer un UUID déterministe à partir d'un ID
+-- Cette fonction génère toujours le même UUID pour le même ID
 CREATE OR REPLACE FUNCTION generate_uuid_from_id(id TEXT)
 RETURNS UUID AS $$
 BEGIN
@@ -52,9 +40,6 @@ BEGIN
   RETURN uuid_generate_v5('6ba7b810-9dad-11d1-80b4-00c04fd430c8'::uuid, id);
 END;
 $$ LANGUAGE plpgsql;
-
--- Exemple: Insérer quelques produits
--- Remplacez ces exemples par vos vrais produits depuis src/data/products.ts
 
 -- Produit 1: Abaya Beige
 INSERT INTO products (
@@ -194,10 +179,78 @@ ON CONFLICT (sku) DO UPDATE SET
   image = EXCLUDED.image,
   updated_at = NOW();
 
--- Note: Pour migrer tous les produits, vous pouvez:
--- 1. Utiliser le script TypeScript (recommandé)
--- 2. Répéter les INSERT ci-dessus pour chaque produit
--- 3. Créer un script personnalisé qui lit src/data/products.ts et génère les INSERT
+-- Produit 3: Abaya Noire
+INSERT INTO products (
+  id,
+  sku,
+  name,
+  name_ar,
+  name_fr,
+  name_it,
+  name_es,
+  slug,
+  price,
+  original_price,
+  image,
+  images,
+  category_id,
+  subcategory,
+  description,
+  description_ar,
+  description_fr,
+  description_it,
+  description_es,
+  colors,
+  sizes,
+  in_stock,
+  is_new,
+  new_arrival,
+  is_best_seller,
+  is_on_sale,
+  rating,
+  review_count,
+  tags
+) VALUES (
+  generate_uuid_from_id('18'),
+  'PROD-18',
+  'Elegant Black Abaya',
+  'عباية سوداء أنيقة',
+  'Abaya Noire Élégante',
+  'Abaya Nera Elegante',
+  'Abaya Negra Elegante',
+  generate_slug('Elegant Black Abaya', '18'),
+  38.99,
+  38.99,
+  '/black1.png',
+  ARRAY['/black1.png', '/black2.png', '/black3.png', '/black4.png'],
+  (SELECT id FROM categories WHERE slug = 'abayas' LIMIT 1),
+  'classic',
+  'Elegant black abaya made from high-quality fabric, perfect for both casual and formal occasions.',
+  'عباية سوداء أنيقة مصنوعة من قماش عالي الجودة، مثالية للمناسبات اليومية والرسمية.',
+  'Abaya noire élégante en tissu de haute qualité, parfaite pour les occasions décontractées et formelles.',
+  'Elegante abaya nera in tessuto di alta qualità, perfetta per occasioni informali e formali.',
+  'Elegante abaya negra en tela de alta calidad, perfecta para ocasiones informales y formales.',
+  ARRAY['Black'],
+  ARRAY['S', 'M', 'L', 'XL', 'XXL'],
+  true,
+  true,
+  true,
+  false,
+  false,
+  0,
+  0,
+  ARRAY['classic', 'versatile', 'modest', 'comfortable']
+)
+ON CONFLICT (sku) DO UPDATE SET
+  name = EXCLUDED.name,
+  name_fr = EXCLUDED.name_fr,
+  price = EXCLUDED.price,
+  image = EXCLUDED.image,
+  updated_at = NOW();
+
+-- Note: Pour migrer tous les 17 produits, répétez le pattern ci-dessus
+-- ou utilisez le script TypeScript migrate-products-to-supabase.ts qui génère automatiquement
+-- tous les INSERT pour tous les produits
 
 -- Vérification
 SELECT 

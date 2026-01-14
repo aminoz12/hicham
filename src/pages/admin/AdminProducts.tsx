@@ -18,7 +18,6 @@ const fetchProducts = async (): Promise<Product[]> => {
 
 const deleteProduct = async (id: string): Promise<void> => {
   await deleteProductService(id);
-}; {
   await new Promise(resolve => setTimeout(resolve, 500));
   // In production, use: await supabase.from('products').delete().eq('id', id);
   console.log('Deleting product:', id);
