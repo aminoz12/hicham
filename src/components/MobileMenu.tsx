@@ -1,26 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { X, ChevronRight, User, Heart, ShoppingBag } from 'lucide-react';
 import { useUIStore } from '@/store/uiStore';
 import { useCartStore } from '@/store/cartStore';
 import LanguageSwitcher from './LanguageSwitcher';
+import { fetchHijabSubcategories, Subcategory } from '@/services/subcategoryService';
 
 const MobileMenu: React.FC = () => {
   const location = useLocation();
   const { toggleMobileMenu } = useUIStore();
   const { itemCount } = useCartStore();
+  const [hijabSubcategories, setHijabSubcategories] = useState<Subcategory[]>([]);
+
+  // Fetch hijab subcategories on mount
+  useEffect(() => {
+    const loadSubcategories = async () => {
+      try {
+        const subcats = await fetchHijabSubcategories();
+        setHijabSubcategories(subcats);
+      } catch (error) {
+        console.error('Error loading subcategories:', error);
+      }
+    };
+    loadSubcategories();
+  }, []);
 
   const navigationItems = [
     {
       label: 'Hijabs',
       href: '/hijabs',
-      children: [
-        { label: 'Modal Hijabs', href: '/hijabs?type=modal' },
-        { label: 'Jersey Hijabs', href: '/hijabs?type=jersey' },
-        { label: 'Chiffon Hijabs', href: '/hijabs?type=chiffon' },
-        { label: 'Satin Hijabs', href: '/hijabs?type=satin' },
-      ]
+      children: hijabSubcategories.length > 0
+        ? hijabSubcategories.map(subcat => ({
+            label: subcat.nameFr || subcat.name,
+            href: `/hijabs?subcategory=${subcat.slug}`
+          }))
+        : [
+            { label: 'Modal Hijabs', href: '/hijabs?type=modal' },
+            { label: 'Jersey Hijabs', href: '/hijabs?type=jersey' },
+            { label: 'Chiffon Hijabs', href: '/hijabs?type=chiffon' },
+            { label: 'Satin Hijabs', href: '/hijabs?type=satin' },
+          ]
     },
     {
       label: 'Abayas',
@@ -30,15 +50,6 @@ const MobileMenu: React.FC = () => {
         { label: 'Pleated Abayas', href: '/abayas?type=pleated' },
         { label: 'Open Abayas', href: '/abayas?type=open' },
         { label: 'Dresses', href: '/abayas?type=dress' },
-      ]
-    },
-    {
-      label: 'Coords',
-      href: '/coords',
-      children: [
-        { label: 'Top & Skirt Sets', href: '/coords?type=top-skirt' },
-        { label: 'Top & Pants Sets', href: '/coords?type=top-pants' },
-        { label: 'Knitwear Sets', href: '/coords?type=knitwear' },
       ]
     },
     {

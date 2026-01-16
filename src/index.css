@@ -211,6 +211,19 @@
   }
 }
 
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 35s linear infinite;
+}
+
 /* Loading spinner */
 .spinner {
   @apply animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600;

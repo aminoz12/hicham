@@ -47,3 +47,4 @@ FROM pg_policies
 WHERE tablename = 'products' AND schemaname = 'public'
 ORDER BY policyname;
 
+

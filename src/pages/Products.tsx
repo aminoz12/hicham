@@ -42,8 +42,9 @@ const Products: React.FC = () => {
     loadProducts();
   }, []);
 
-  // Get category from URL
+  // Get category and subcategory from URL
   const category = searchParams.get('category') as ProductCategory | null;
+  const subcategory = searchParams.get('subcategory');
   const search = searchParams.get('search');
 
   useEffect(() => {
@@ -54,12 +55,16 @@ const Products: React.FC = () => {
       initialFilters.category = category as any;
     }
     
+    if (subcategory) {
+      initialFilters.subcategory = subcategory;
+    }
+    
     if (search) {
       setSearchQuery(search);
     }
 
     setFilters(initialFilters);
-  }, [category, search]);
+  }, [category, subcategory, search]);
 
   // Filter and sort products
   useEffect(() => {

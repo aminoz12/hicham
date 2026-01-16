@@ -58,3 +58,4 @@ For testing, you can use SumUp's test mode. Make sure your SumUp account is set 
 - Consider using a backend proxy for API calls in production
 - The current implementation uses the secret key in the frontend for simplicity, but this should be moved to a backend service for production use
 
+

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Star, Quote } from 'lucide-react';
@@ -135,13 +136,13 @@ const TestimonialsFr: React.FC = () => {
           <p className="text-lg mb-6 max-w-2xl mx-auto">
             Découvrez la qualité et le service que nos clientes adorent. Commencez votre voyage avec nous dès aujourd'hui.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button className="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-100 transition-colors">
+          <div className="flex justify-center">
+            <Link 
+              to="/products"
+              className="px-6 py-3 bg-white text-primary-600 font-medium rounded-lg hover:bg-gray-100 transition-colors inline-block"
+            >
               Boutique
-            </button>
-            <button className="px-6 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors">
-              En savoir plus
-            </button>
+            </Link>
           </div>
         </motion.div>
       </div>

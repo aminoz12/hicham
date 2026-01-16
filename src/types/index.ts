@@ -8,7 +8,7 @@ export interface Product {
   price: number;
   originalPrice?: number;
   image: string;
-  images: string[];
+  images: string[]; // Up to 3 images
   category: ProductCategory;
   subcategory?: string;
   description: string;
@@ -18,7 +18,8 @@ export interface Product {
   descriptionEs: string;
   colors: string[];
   sizes: string[];
-  inStock: boolean;
+  inStock: boolean; // Calculated from stockQuantity > 0
+  stockQuantity: number; // Number of pieces in stock
   isNew: boolean;
   newArrival: boolean;
   isBestSeller: boolean;

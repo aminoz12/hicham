@@ -3,6 +3,21 @@ import { Product, ProductCategory } from '@/types';
 
 // Mapper les données Supabase vers le format Product
 function mapSupabaseProductToProduct(supabaseProduct: any): Product {
+  const stockQuantity = supabaseProduct.stock_quantity ?? 0;
+  // Ensure images array has max 3 items and at least the main image
+  const images = supabaseProduct.images && Array.isArray(supabaseProduct.images) 
+    ? supabaseProduct.images.slice(0, 3).filter((img: string) => img) // Limit to 3 and filter empty
+    : supabaseProduct.image 
+      ? [supabaseProduct.image] 
+      : [];
+  
+  // Ensure main image is in images array
+  if (supabaseProduct.image && !images.includes(supabaseProduct.image)) {
+    images.unshift(supabaseProduct.image);
+    // Keep only first 3
+    if (images.length > 3) images.pop();
+  }
+  
   return {
     id: supabaseProduct.id,
     name: supabaseProduct.name,
@@ -13,9 +28,9 @@ function mapSupabaseProductToProduct(supabaseProduct: any): Product {
     price: parseFloat(supabaseProduct.price),
     originalPrice: supabaseProduct.original_price ? parseFloat(supabaseProduct.original_price) : undefined,
     image: supabaseProduct.image,
-    images: supabaseProduct.images || [supabaseProduct.image],
+    images: images,
     category: supabaseProduct.category?.slug || supabaseProduct.category_slug || (supabaseProduct.category_id ? 'hijabs' : 'hijabs'),
-    subcategory: supabaseProduct.subcategory,
+    subcategory: supabaseProduct.subcategory_info?.slug || supabaseProduct.subcategory || '',
     description: supabaseProduct.description || '',
     descriptionAr: supabaseProduct.description_ar || supabaseProduct.description || '',
     descriptionFr: supabaseProduct.description_fr || supabaseProduct.description || '',
@@ -23,7 +38,8 @@ function mapSupabaseProductToProduct(supabaseProduct: any): Product {
     descriptionEs: supabaseProduct.description_es || supabaseProduct.description || '',
     colors: supabaseProduct.colors || [],
     sizes: supabaseProduct.sizes || [],
-    inStock: supabaseProduct.in_stock !== false,
+    stockQuantity: stockQuantity,
+    inStock: stockQuantity > 0, // Calculate from stockQuantity
     isNew: supabaseProduct.is_new || false,
     newArrival: supabaseProduct.new_arrival || false,
     isBestSeller: supabaseProduct.is_best_seller || false,
@@ -37,12 +53,13 @@ function mapSupabaseProductToProduct(supabaseProduct: any): Product {
 // Récupérer tous les produits
 export async function fetchAllProducts(): Promise<Product[]> {
   try {
-    // Essayer d'abord avec la relation category
+    // Essayer d'abord avec la relation category et subcategory
     let { data, error } = await supabase
       .from('products')
       .select(`
         *,
-        category:categories(slug, name)
+        category:categories(slug, name),
+        subcategory_info:subcategories(slug, name, name_fr)
       `)
       .order('created_at', { ascending: false });
 
@@ -300,6 +317,22 @@ export async function saveProduct(product: Partial<Product>): Promise<Product> {
       categoryId = category?.id || null;
     }
 
+    // Obtenir l'ID de la sous-catégorie si fournie (slug -> id)
+    let subcategoryId: string | null = null;
+    if (product.subcategory && product.category === 'hijabs') {
+      const { data: subcategory, error: subcategoryError } = await supabase
+        .from('subcategories')
+        .select('id')
+        .eq('slug', product.subcategory)
+        .single();
+      
+      if (subcategoryError) {
+        console.error('Error fetching subcategory:', subcategoryError);
+      }
+      
+      subcategoryId = subcategory?.id || null;
+    }
+
     // Générer un slug unique (seulement pour les nouveaux produits)
     let slug: string = '';
     const timestamp = Date.now();
@@ -333,6 +366,22 @@ export async function saveProduct(product: Partial<Product>): Promise<Product> {
     // Générer un SKU unique si pas fourni
     const sku = (product as any).sku || `PROD-${timestamp}-${randomStr}`;
 
+    // Ensure images array has max 3 items
+    const images = product.images && Array.isArray(product.images)
+      ? product.images.slice(0, 3).filter((img: string) => img) // Limit to 3 and filter empty
+      : product.image 
+        ? [product.image] 
+        : [];
+    
+    // Ensure main image is in images array
+    if (product.image && !images.includes(product.image)) {
+      images.unshift(product.image);
+      // Keep only first 3
+      if (images.length > 3) images.pop();
+    }
+
+    const stockQuantity = (product as any).stockQuantity ?? 0;
+
     const productData: any = {
       name: product.name,
       name_ar: product.nameAr || product.name,
@@ -344,9 +393,10 @@ export async function saveProduct(product: Partial<Product>): Promise<Product> {
       price: product.price,
       original_price: product.originalPrice || null,
       image: product.image,
-      images: product.images || [product.image],
+      images: images,
       category_id: categoryId,
-      subcategory: product.subcategory || null,
+      subcategory_id: subcategoryId,
+      subcategory: product.subcategory || null, // Keep for backward compatibility
       description: product.description || '',
       description_ar: product.descriptionAr || product.description || '',
       description_fr: product.descriptionFr || product.description || '',
@@ -354,7 +404,8 @@ export async function saveProduct(product: Partial<Product>): Promise<Product> {
       description_es: product.descriptionEs || product.description || '',
       colors: product.colors || [],
       sizes: product.sizes || [],
-      in_stock: product.inStock !== false,
+      stock_quantity: stockQuantity,
+      in_stock: stockQuantity > 0, // Calculate from stockQuantity
       is_new: product.isNew || false,
       new_arrival: product.newArrival || false,
       is_best_seller: product.isBestSeller || false,

@@ -90,3 +90,4 @@ node server.js
 - `supabase/functions/get-sumup-checkout-status/index.ts` - Gets status
 - `SUPABASE_EDGE_FUNCTIONS_SETUP.md` - Detailed setup guide
 
+

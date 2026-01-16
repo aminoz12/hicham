@@ -91,3 +91,4 @@ Si Supabase n'est pas disponible ou en cas d'erreur, le code utilise automatique
 → Vérifiez vos variables d'environnement
 → Vérifiez que votre projet Supabase est actif
 
+

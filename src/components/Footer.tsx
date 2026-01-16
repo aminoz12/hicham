@@ -30,12 +30,9 @@ const Footer: React.FC = () => {
   ];
 
   const quickLinks = [
-    { label: 'À propos', href: '/about' },
-    { label: 'Notre histoire', href: '/story' },
-    { label: 'Guide des tailles', href: '/size-guide' },
-    { label: 'Instructions d\'entretien', href: '/care' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Presse', href: '/press' }
+    { label: 'Hijabs', href: '/hijabs' },
+    { label: 'Abayas', href: '/abayas' },
+    { label: 'Boxes Cadeau', href: '/boxes-cadeau' }
   ];
 
   const customerService = [
@@ -198,15 +195,20 @@ const Footer: React.FC = () => {
               </div>
             </div>
 
-            {/* Newsletter Signup */}
+            {/* Instagram Follow */}
             <div className="mt-8">
-              <h5 className="text-sm font-semibold text-gray-300 mb-3">Newsletter</h5>
+              <h5 className="text-sm font-semibold text-gray-300 mb-3">Suivez-nous</h5>
               <p className="text-sm text-gray-400 mb-4">
                 Obtenez 15% de réduction sur votre première commande
               </p>
-              <button className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
-                S'abonner maintenant
-              </button>
+              <a 
+                href="https://www.instagram.com/hijabinour_hn/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium flex items-center justify-center"
+              >
+                S'abonner sur Instagram
+              </a>
             </div>
           </motion.div>
         </div>

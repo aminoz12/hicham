@@ -13,9 +13,12 @@ import { useUIStore } from '@/store/uiStore';
 import { clsx } from 'clsx';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from '@/hooks/useTranslation';
+import { fetchHijabSubcategories, Subcategory } from '@/services/subcategoryService';
+import ScrollingBanner from './ScrollingBanner';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hijabSubcategories, setHijabSubcategories] = useState<Subcategory[]>([]);
   
   const location = useLocation();
   const { itemCount } = useCartStore();
@@ -24,6 +27,19 @@ const Header: React.FC = () => {
     toggleMobileMenu, 
     toggleCart
   } = useUIStore();
+
+  // Fetch hijab subcategories on mount
+  useEffect(() => {
+    const loadSubcategories = async () => {
+      try {
+        const subcats = await fetchHijabSubcategories();
+        setHijabSubcategories(subcats);
+      } catch (error) {
+        console.error('Error loading subcategories:', error);
+      }
+    };
+    loadSubcategories();
+  }, []);
 
   // Handle scroll effect
   useEffect(() => {
@@ -35,17 +51,22 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Navigation items
+  // Navigation items with dynamic hijab subcategories
   const navigationItems = [
     {
       label: t('hijabs'),
       href: '/hijabs',
-      children: [
-        { label: t('modalHijabs'), href: '/hijabs?type=modal' },
-        { label: t('jerseyHijabs'), href: '/hijabs?type=jersey' },
-        { label: t('chiffonHijabs'), href: '/hijabs?type=chiffon' },
-        { label: t('satinHijabs'), href: '/hijabs?type=satin' },
-      ]
+      children: hijabSubcategories.length > 0
+        ? hijabSubcategories.map(subcat => ({
+            label: subcat.nameFr || subcat.name,
+            href: `/hijabs?subcategory=${subcat.slug}`
+          }))
+        : [
+            { label: t('modalHijabs'), href: '/hijabs?type=modal' },
+            { label: t('jerseyHijabs'), href: '/hijabs?type=jersey' },
+            { label: t('chiffonHijabs'), href: '/hijabs?type=chiffon' },
+            { label: t('satinHijabs'), href: '/hijabs?type=satin' },
+          ]
     },
     {
       label: t('abayas'),
@@ -55,15 +76,6 @@ const Header: React.FC = () => {
         { label: t('pleatedAbayas'), href: '/abayas?type=pleated' },
         { label: t('openAbayas'), href: '/abayas?type=open' },
         { label: t('abayaDresses'), href: '/abayas?type=dress' },
-      ]
-    },
-    {
-      label: t('coords'),
-      href: '/coords',
-      children: [
-        { label: t('topSkirtSets'), href: '/coords?type=top-skirt' },
-        { label: t('topPantsSets'), href: '/coords?type=top-pants' },
-        { label: t('knitwearSets'), href: '/coords?type=knitwear' },
       ]
     },
     {
@@ -83,13 +95,16 @@ const Header: React.FC = () => {
 
   return (
     <>
+      {/* Scrolling Banner */}
+      <ScrollingBanner />
+      
       {/* Main Header */}
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.1 }}
         className={clsx(
-          'sticky top-0 z-40 transition-all duration-300',
+          'sticky top-10 z-40 transition-all duration-300',
           isScrolled 
             ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200' 
             : 'bg-white shadow-sm'
@@ -117,11 +132,7 @@ const Header: React.FC = () => {
 
                   {/* Dropdown Menu */}
                   {item.children && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      whileHover={{ opacity: 1, y: 0 }}
-                      className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
-                    >
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       {item.children?.map((child) => (
                         <Link
                           key={child.label}
@@ -131,7 +142,7 @@ const Header: React.FC = () => {
                           {child.label}
                         </Link>
                       ))}
-                    </motion.div>
+                    </div>
                   )}
                 </div>
               ))}

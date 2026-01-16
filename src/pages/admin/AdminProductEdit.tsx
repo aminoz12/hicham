@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Product } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { fetchProductById, saveProduct as saveProductService, deleteProduct as deleteProductService } from '@/services/productService';
+import { fetchHijabSubcategories, Subcategory } from '@/services/subcategoryService';
 import toast from 'react-hot-toast';
 
 const fetchProduct = async (id: string): Promise<Product | null> => {
@@ -63,10 +64,12 @@ export function AdminProductEdit() {
     nameFr: '',
     price: '',
     image: '',
+    images: [] as string[], // Up to 3 images
     category: 'hijabs' as Product['category'],
+    subcategory: '',
     description: '',
     descriptionFr: '',
-    inStock: true,
+    stockQuantity: 0,
     isNew: false,
     isOnSale: false,
     originalPrice: '',
@@ -77,22 +80,42 @@ export function AdminProductEdit() {
   });
   const [sizeInput, setSizeInput] = useState('');
   const [colorInput, setColorInput] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>('');
+  const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>(['', '', '']);
   const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [hijabSubcategories, setHijabSubcategories] = useState<Subcategory[]>([]);
+  const fileInputRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+
+  // Fetch hijab subcategories when component mounts
+  useEffect(() => {
+    const loadSubcategories = async () => {
+      try {
+        const subcats = await fetchHijabSubcategories();
+        setHijabSubcategories(subcats);
+      } catch (error) {
+        console.error('Error loading subcategories:', error);
+      }
+    };
+    loadSubcategories();
+  }, []);
 
   useEffect(() => {
     if (product && !isNew) {
+      const images = product.images && product.images.length > 0 ? product.images : [product.image];
+      // Ensure we have exactly 3 image slots
+      const paddedImages = [...images, '', '', ''].slice(0, 3);
+      
       setFormData({
         name: product.name,
         nameFr: product.nameFr,
         price: product.price.toString(),
         image: product.image,
+        images: paddedImages,
         category: product.category,
+        subcategory: product.subcategory || '',
         description: product.description,
         descriptionFr: product.descriptionFr,
-        inStock: product.inStock,
+        stockQuantity: product.stockQuantity || 0,
         isNew: product.isNew,
         isOnSale: product.isOnSale,
         originalPrice: product.originalPrice?.toString() || '',
@@ -101,11 +124,13 @@ export function AdminProductEdit() {
         promotionType: (product as any).promotionType || 'none',
         promotionValue: (product as any).promotionValue || '',
       });
-      setImagePreview(product.image);
+      
+      // Set image previews
+      setImagePreviews(paddedImages);
     }
   }, [product, isNew]);
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
@@ -118,11 +143,23 @@ export function AdminProductEdit() {
         toast.error('L\'image ne doit pas dépasser 5MB');
         return;
       }
-      setImageFile(file);
+      
+      // Update image files array
+      const newImageFiles = [...imageFiles];
+      newImageFiles[index] = file;
+      setImageFiles(newImageFiles);
+      
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const newPreviews = [...imagePreviews];
+        newPreviews[index] = reader.result as string;
+        setImagePreviews(newPreviews);
+        
+        // Update formData images array
+        const newImages = [...formData.images];
+        newImages[index] = reader.result as string;
+        setFormData({ ...formData, images: newImages });
       };
       reader.readAsDataURL(file);
     }
@@ -242,28 +279,56 @@ export function AdminProductEdit() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    let imageUrl = formData.image;
+    setUploading(true);
+    const uploadedImages: string[] = [];
     
-    // Upload image if a new file was selected
-    if (imageFile) {
-      try {
-        imageUrl = await uploadImage(imageFile);
-      } catch (error) {
-        return; // Stop submission if upload fails
+    try {
+      // Upload all image files
+      for (let i = 0; i < imageFiles.length; i++) {
+        if (imageFiles[i]) {
+          try {
+            const url = await uploadImage(imageFiles[i]!);
+            uploadedImages[i] = url;
+          } catch (error) {
+            console.error(`Error uploading image ${i + 1}:`, error);
+            // Continue with other images even if one fails
+          }
+        } else if (formData.images[i]) {
+          // Use existing URL if no new file
+          uploadedImages[i] = formData.images[i];
+        }
       }
-    }
+      
+      // Filter out empty strings and ensure main image is first
+      const finalImages = uploadedImages.filter(img => img && img.trim());
+      const mainImage = finalImages[0] || formData.image;
+      
+      // Ensure main image is in the array
+      if (mainImage && !finalImages.includes(mainImage)) {
+        finalImages.unshift(mainImage);
+      }
+      
+      // Limit to 3 images
+      const imagesArray = finalImages.slice(0, 3);
 
-    saveMutation.mutate({
-      id: isNew ? Date.now().toString() : id,
-      ...formData,
-      image: imageUrl,
-      price: parseFloat(formData.price),
-      originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-      sizes: formData.sizes,
-      colors: formData.colors,
-      promotionType: formData.promotionType === 'none' ? undefined : formData.promotionType,
-      promotionValue: formData.promotionType === 'none' ? undefined : formData.promotionValue,
-    } as any);
+      saveMutation.mutate({
+        id: isNew ? Date.now().toString() : id,
+        ...formData,
+        image: mainImage,
+        images: imagesArray,
+        stockQuantity: formData.stockQuantity,
+        price: parseFloat(formData.price),
+        originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
+        sizes: formData.sizes,
+        colors: formData.colors,
+        promotionType: formData.promotionType === 'none' ? undefined : formData.promotionType,
+        promotionValue: formData.promotionType === 'none' ? undefined : formData.promotionValue,
+      } as any);
+    } catch (error) {
+      console.error('Error in handleSubmit:', error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDelete = () => {
@@ -332,7 +397,14 @@ export function AdminProductEdit() {
                 <select
                   id="category"
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value as Product['category'] })}
+                  onChange={(e) => {
+                    const newCategory = e.target.value as Product['category'];
+                    setFormData({ 
+                      ...formData, 
+                      category: newCategory,
+                      subcategory: newCategory !== 'hijabs' ? '' : formData.subcategory // Clear subcategory if not hijabs
+                    });
+                  }}
                   className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
                   required
                 >
@@ -342,81 +414,123 @@ export function AdminProductEdit() {
                   <option value="boxes-cadeau">Boxes Cadeau</option>
                 </select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="image">Image du produit</Label>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <div className="space-y-3">
-                  {imagePreview && (
-                    <div className="relative w-full h-96 border-2 border-dashed border-slate-300 rounded-lg overflow-hidden bg-slate-50">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="w-full h-full object-contain"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setImagePreview('');
-                          setImageFile(null);
-                          setFormData({ ...formData, image: '' });
-                          if (fileInputRef.current) {
-                            fileInputRef.current.value = '';
-                          }
-                        }}
-                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg"
-                      >
-                        <X className="h-5 w-5" />
-                      </button>
-                    </div>
-                  )}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="w-full"
-                    disabled={uploading}
+              {formData.category === 'hijabs' && hijabSubcategories.length > 0 && (
+                <div className="space-y-2">
+                  <Label htmlFor="subcategory">Sous-catégorie (optionnel)</Label>
+                  <select
+                    id="subcategory"
+                    value={formData.subcategory}
+                    onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm"
                   >
-                    {uploading ? (
-                      <>
-                        <Upload className="mr-2 h-4 w-4 animate-spin" />
-                        Téléchargement...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="mr-2 h-4 w-4" />
-                        {imagePreview ? 'Changer l\'image' : 'Télécharger une image'}
-                      </>
-                    )}
-                  </Button>
-                  <div className="text-sm text-slate-500 text-center pt-2 border-t">
-                    Ou utilisez une URL
-                  </div>
-                  <Input
-                    id="image-url"
-                    placeholder="https://example.com/image.jpg"
-                    value={formData.image}
-                    onChange={(e) => {
-                      setFormData({ ...formData, image: e.target.value });
-                      if (e.target.value && !imageFile) {
-                        setImagePreview(e.target.value);
-                      } else if (!e.target.value && !imageFile) {
-                        setImagePreview('');
-                      }
-                    }}
-                    disabled={!!imageFile}
-                  />
-                  {imageFile && (
-                    <p className="text-xs text-blue-600 text-center">
-                      Un fichier est sélectionné. L'URL sera ignorée.
-                    </p>
-                  )}
+                    <option value="">Aucune sous-catégorie</option>
+                    {hijabSubcategories.map((subcat) => (
+                      <option key={subcat.id} value={subcat.slug}>
+                        {subcat.nameFr || subcat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label>Images du produit (jusqu'à 3 images)</Label>
+                <div className="space-y-4">
+                  {[0, 1, 2].map((index) => (
+                    <div key={index} className="space-y-2">
+                      <Label htmlFor={`image-${index}`} className="text-sm">
+                        Image {index + 1} {index === 0 && '(principale)'}
+                      </Label>
+                      <input
+                        ref={fileInputRefs[index]}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageSelect(index)}
+                        className="hidden"
+                        id={`image-upload-${index}`}
+                      />
+                      <div className="space-y-2">
+                        {imagePreviews[index] && (
+                          <div className="relative w-full h-48 border-2 border-dashed border-slate-300 rounded-lg overflow-hidden bg-slate-50">
+                            <img
+                              src={imagePreviews[index]}
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-full object-contain"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newPreviews = [...imagePreviews];
+                                newPreviews[index] = '';
+                                setImagePreviews(newPreviews);
+                                
+                                const newFiles = [...imageFiles];
+                                newFiles[index] = null;
+                                setImageFiles(newFiles);
+                                
+                                const newImages = [...formData.images];
+                                newImages[index] = '';
+                                setFormData({ ...formData, images: newImages });
+                                
+                                if (fileInputRefs[index].current) {
+                                  fileInputRefs[index].current!.value = '';
+                                }
+                              }}
+                              className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => fileInputRefs[index].current?.click()}
+                          className="w-full"
+                          disabled={uploading}
+                        >
+                          {uploading ? (
+                            <>
+                              <Upload className="mr-2 h-4 w-4 animate-spin" />
+                              Téléchargement...
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="mr-2 h-4 w-4" />
+                              {imagePreviews[index] ? 'Changer l\'image' : 'Télécharger une image'}
+                            </>
+                          )}
+                        </Button>
+                        <div className="text-xs text-slate-500 text-center">
+                          Ou utilisez une URL
+                        </div>
+                        <Input
+                          id={`image-url-${index}`}
+                          placeholder="https://example.com/image.jpg"
+                          value={formData.images[index] || ''}
+                          onChange={(e) => {
+                            const newImages = [...formData.images];
+                            newImages[index] = e.target.value;
+                            setFormData({ ...formData, images: newImages });
+                            
+                            const newPreviews = [...imagePreviews];
+                            newPreviews[index] = e.target.value;
+                            setImagePreviews(newPreviews);
+                            
+                            // Set main image if it's the first one
+                            if (index === 0) {
+                              setFormData({ ...formData, image: e.target.value, images: newImages });
+                            }
+                          }}
+                          disabled={!!imageFiles[index]}
+                        />
+                        {imageFiles[index] && (
+                          <p className="text-xs text-blue-600 text-center">
+                            Un fichier est sélectionné. L'URL sera ignorée.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>
@@ -448,16 +562,26 @@ export function AdminProductEdit() {
                   onChange={(e) => setFormData({ ...formData, originalPrice: e.target.value })}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="stockQuantity">Quantité en stock</Label>
+                <Input
+                  id="stockQuantity"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={formData.stockQuantity}
+                  onChange={(e) => {
+                    const quantity = parseInt(e.target.value) || 0;
+                    setFormData({ ...formData, stockQuantity: quantity });
+                  }}
+                  required
+                />
+                <p className="text-xs text-slate-500">
+                  Le produit sera automatiquement marqué comme "en stock" si la quantité est supérieure à 0.
+                  La quantité diminuera automatiquement de 1 à chaque commande.
+                </p>
+              </div>
               <div className="space-y-4">
-                <label className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.inStock}
-                    onChange={(e) => setFormData({ ...formData, inStock: e.target.checked })}
-                    className="rounded"
-                  />
-                  <span>En stock</span>
-                </label>
                 <label className="flex items-center space-x-2">
                   <input
                     type="checkbox"

@@ -39,3 +39,4 @@ Le code a été amélioré pour :
 - Gérer les erreurs SSL de manière plus claire
 - Utiliser uniquement la base de données (pas de fallback statique)
 
+

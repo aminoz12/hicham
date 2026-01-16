@@ -46,3 +46,4 @@ Ces politiques permettent à **n'importe qui** d'uploader dans le bucket si elle
 
 Pour l'instant, cette solution fonctionne pour le développement et l'admin panel.
 
+

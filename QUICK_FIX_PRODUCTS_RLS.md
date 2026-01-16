@@ -56,3 +56,4 @@ ALTER TABLE products DISABLE ROW LEVEL SECURITY;
 
 Mais il est préférable d'utiliser les politiques publiques comme décrit ci-dessus.
 
+
