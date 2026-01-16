@@ -39,7 +39,7 @@ function mapSupabaseProductToProduct(supabaseProduct: any): Product {
     colors: supabaseProduct.colors || [],
     sizes: supabaseProduct.sizes || [],
     stockQuantity: stockQuantity,
-    inStock: stockQuantity > 0, // Calculate from stockQuantity
+    inStock: (stockQuantity ?? 0) > 0, // Calculate from stockQuantity, default to 0 if not set
     isNew: supabaseProduct.is_new || false,
     newArrival: supabaseProduct.new_arrival || false,
     isBestSeller: supabaseProduct.is_best_seller || false,

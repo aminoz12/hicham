@@ -19,7 +19,7 @@ export interface Product {
   colors: string[];
   sizes: string[];
   inStock: boolean; // Calculated from stockQuantity > 0
-  stockQuantity: number; // Number of pieces in stock
+  stockQuantity?: number; // Number of pieces in stock (optional for backward compatibility)
   isNew: boolean;
   newArrival: boolean;
   isBestSeller: boolean;
