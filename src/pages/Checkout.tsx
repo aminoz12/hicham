@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CreditCard, Tag, X, CheckCircle, MessageCircle } from 'lucide-react';
+import { ArrowLeft, CreditCard, Tag, X, CheckCircle, MessageCircle, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/utils';
 import { toast } from 'react-hot-toast';
 import { 
   generateOrderReference,
-  initSumUpCardWidget,
-  openWhatsAppOrder,
-  loadSumUpSDK
+  createCheckoutAndRedirect,
+  openWhatsAppOrder
 } from '@/services/sumupService';
 import { 
   findPromotionByCode, 
@@ -24,14 +23,12 @@ import { Helmet } from 'react-helmet-async';
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items, clearCart } = useCartStore();
-  const cardWidgetRef = useRef<any>(null);
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromotion, setAppliedPromotion] = useState<AppliedPromotion | null>(null);
   const [isApplyingPromo, setIsApplyingPromo] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'whatsapp'>('card');
-  const [sdkLoaded, setSdkLoaded] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'success' | 'failed'>('pending');
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -61,13 +58,6 @@ const Checkout: React.FC = () => {
   // Calculate final total
   const total = Math.max(0, subtotal - discountAmount);
 
-  // Load SumUp SDK on mount
-  useEffect(() => {
-    loadSumUpSDK()
-      .then(() => setSdkLoaded(true))
-      .catch((err) => console.error('Failed to load SumUp SDK:', err));
-  }, []);
-
   // Check for automatic promotions on load
   useEffect(() => {
     const checkAutomaticPromotions = async () => {
@@ -95,29 +85,23 @@ const Checkout: React.FC = () => {
     }
   }, [items, navigate, paymentStatus]);
 
-  // Initialize card widget when SDK is loaded and payment method is card
-  useEffect(() => {
-    if (sdkLoaded && paymentMethod === 'card' && total > 0 && paymentStatus === 'pending') {
-      const timer = setTimeout(() => {
-        initSumUpCardWidget(
-          'sumup-card-widget',
-          {
-            amount: total,
-            currency: 'EUR',
-            reference: currentOrderRef || generateOrderReference(),
-          },
-          handlePaymentSuccess,
-          handlePaymentError
-        ).then(widget => {
-          cardWidgetRef.current = widget;
-        }).catch(err => {
-          console.error('Failed to init card widget:', err);
-        });
-      }, 500);
+  // Listen for payment result from popup
+  const handlePaymentMessage = useCallback((event: MessageEvent) => {
+    if (event.data?.type === 'SUMUP_PAYMENT_RESULT') {
+      console.log('Payment result received:', event.data);
       
-      return () => clearTimeout(timer);
+      if (event.data.status === 'success') {
+        handlePaymentSuccess(event.data);
+      } else if (event.data.status === 'failed' || event.data.status === 'error') {
+        handlePaymentError(event.data);
+      }
     }
-  }, [sdkLoaded, paymentMethod, total, paymentStatus]);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('message', handlePaymentMessage);
+    return () => window.removeEventListener('message', handlePaymentMessage);
+  }, [handlePaymentMessage]);
 
   const handleApplyPromoCode = async () => {
     if (!promoCode.trim()) {
@@ -173,29 +157,11 @@ const Checkout: React.FC = () => {
     setPaymentStatus('success');
     
     try {
-      const orderReference = currentOrderRef || generateOrderReference();
+      const orderReference = result.reference || currentOrderRef || generateOrderReference();
       
-      // Create order in database
-      const orderItems = cartItemsToOrderItems(items);
+      // Update order status in database
+      // Note: Order was already created before payment
       
-      await createOrder({
-        reference: orderReference,
-        customer_email: customerInfo.email || undefined,
-        customer_name: customerInfo.name || undefined,
-        customer_phone: customerInfo.phone || undefined,
-        items: orderItems,
-        subtotal: subtotal,
-        discount_amount: discountAmount,
-        promotion_id: appliedPromotion?.promotion.id,
-        promotion_code: appliedPromotion?.promotion.code,
-        shipping_cost: 0,
-        total: total,
-        status: 'paid',
-        payment_method: 'sumup_card',
-        payment_status: 'completed',
-        notes: `Transaction: ${result?.transaction_code || 'N/A'}`,
-      });
-
       // Increment promotion usage if used
       if (appliedPromotion?.promotion.id) {
         await incrementPromotionUsage(appliedPromotion.promotion.id);
@@ -207,8 +173,7 @@ const Checkout: React.FC = () => {
       toast.success('Paiement réussi! Merci pour votre commande.');
       
     } catch (error) {
-      console.error('Error saving order:', error);
-      // Payment succeeded but order save failed - still show success
+      console.error('Error updating order:', error);
       clearCart();
       toast.success('Paiement réussi!');
     }
@@ -217,10 +182,108 @@ const Checkout: React.FC = () => {
   const handlePaymentError = (error: any) => {
     console.error('Payment error:', error);
     setPaymentStatus('failed');
+    setIsProcessing(false);
     toast.error('Le paiement a échoué. Veuillez réessayer.');
   };
 
+  const handleCardPayment = async () => {
+    // Validate customer info
+    if (!customerInfo.name.trim()) {
+      toast.error('Veuillez entrer votre nom');
+      return;
+    }
+    if (!customerInfo.email.trim()) {
+      toast.error('Veuillez entrer votre email');
+      return;
+    }
+    if (!customerInfo.phone.trim()) {
+      toast.error('Veuillez entrer votre téléphone');
+      return;
+    }
+
+    setIsProcessing(true);
+    setPaymentStatus('processing');
+    
+    try {
+      const orderReference = generateOrderReference();
+      setCurrentOrderRef(orderReference);
+      
+      // Create order in database FIRST (pending status)
+      const orderItems = cartItemsToOrderItems(items);
+      
+      await createOrder({
+        reference: orderReference,
+        customer_email: customerInfo.email,
+        customer_name: customerInfo.name,
+        customer_phone: customerInfo.phone,
+        items: orderItems,
+        subtotal: subtotal,
+        discount_amount: discountAmount,
+        promotion_id: appliedPromotion?.promotion.id,
+        promotion_code: appliedPromotion?.promotion.code,
+        shipping_cost: 0,
+        total: total,
+        status: 'pending',
+        payment_method: 'sumup_card',
+        payment_status: 'pending',
+      });
+
+      // Create SumUp checkout and open popup
+      const itemNames = items.map(item => item.product.name).join(', ');
+      const description = `Commande: ${items.length} article(s) - ${itemNames.substring(0, 100)}`;
+      
+      const result = await createCheckoutAndRedirect({
+        amount: total,
+        currency: 'EUR',
+        description: description,
+        reference: orderReference,
+        customerEmail: customerInfo.email,
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Échec de la création du paiement');
+      }
+
+      toast.success('Fenêtre de paiement ouverte. Complétez votre paiement.');
+      
+      // If on mobile, we've been redirected - handle differently
+      if (!result.popup) {
+        // Mobile - page will redirect, status will be handled on return
+        return;
+      }
+
+      // Desktop - popup is open, wait for it to close or message
+      const checkPopupInterval = setInterval(() => {
+        if (result.popup && result.popup.closed) {
+          clearInterval(checkPopupInterval);
+          // Popup was closed - check if payment succeeded
+          setIsProcessing(false);
+          if (paymentStatus !== 'success') {
+            setPaymentStatus('pending');
+            toast('Paiement annulé ou fenêtre fermée', { icon: '⚠️' });
+          }
+        }
+      }, 1000);
+      
+    } catch (error: any) {
+      console.error('Error creating payment:', error);
+      setIsProcessing(false);
+      setPaymentStatus('failed');
+      toast.error(error.message || 'Erreur lors de la création du paiement. Veuillez réessayer.');
+    }
+  };
+
   const handleWhatsAppOrder = async () => {
+    // Validate customer info
+    if (!customerInfo.name.trim()) {
+      toast.error('Veuillez entrer votre nom');
+      return;
+    }
+    if (!customerInfo.phone.trim()) {
+      toast.error('Veuillez entrer votre téléphone');
+      return;
+    }
+
     setIsProcessing(true);
     
     try {
@@ -233,8 +296,8 @@ const Checkout: React.FC = () => {
       await createOrder({
         reference: orderReference,
         customer_email: customerInfo.email || undefined,
-        customer_name: customerInfo.name || undefined,
-        customer_phone: customerInfo.phone || undefined,
+        customer_name: customerInfo.name,
+        customer_phone: customerInfo.phone,
         items: orderItems,
         subtotal: subtotal,
         discount_amount: discountAmount,
@@ -261,6 +324,8 @@ const Checkout: React.FC = () => {
         amount: total,
         reference: orderReference,
         items: itemsList,
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
       });
       
       // Clear cart
@@ -354,6 +419,7 @@ const Checkout: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="Votre nom"
                     required
+                    disabled={isProcessing}
                   />
                 </div>
                 <div>
@@ -367,6 +433,7 @@ const Checkout: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="votre@email.com"
                     required
+                    disabled={isProcessing}
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -380,6 +447,7 @@ const Checkout: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="+33 6 XX XX XX XX"
                     required
+                    disabled={isProcessing}
                   />
                 </div>
               </div>
@@ -412,6 +480,7 @@ const Checkout: React.FC = () => {
                   <button
                     onClick={handleRemovePromotion}
                     className="text-green-600 hover:text-green-800"
+                    disabled={isProcessing}
                   >
                     <X className="h-5 w-5" />
                   </button>
@@ -424,10 +493,11 @@ const Checkout: React.FC = () => {
                     onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                     placeholder="Entrez votre code"
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent uppercase"
+                    disabled={isProcessing}
                   />
                   <button
                     onClick={handleApplyPromoCode}
-                    disabled={isApplyingPromo}
+                    disabled={isApplyingPromo || isProcessing}
                     className="btn-secondary px-6"
                   >
                     {isApplyingPromo ? 'Vérification...' : 'Appliquer'}
@@ -454,7 +524,7 @@ const Checkout: React.FC = () => {
                     paymentMethod === 'card' 
                       ? 'border-primary-500 bg-primary-50' 
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <input
                     type="radio"
@@ -463,6 +533,7 @@ const Checkout: React.FC = () => {
                     checked={paymentMethod === 'card'}
                     onChange={() => setPaymentMethod('card')}
                     className="sr-only"
+                    disabled={isProcessing}
                   />
                   <CreditCard className={`h-6 w-6 mr-3 ${paymentMethod === 'card' ? 'text-primary-600' : 'text-gray-400'}`} />
                   <div>
@@ -477,7 +548,7 @@ const Checkout: React.FC = () => {
                     paymentMethod === 'whatsapp' 
                       ? 'border-green-500 bg-green-50' 
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <input
                     type="radio"
@@ -486,6 +557,7 @@ const Checkout: React.FC = () => {
                     checked={paymentMethod === 'whatsapp'}
                     onChange={() => setPaymentMethod('whatsapp')}
                     className="sr-only"
+                    disabled={isProcessing}
                   />
                   <MessageCircle className={`h-6 w-6 mr-3 ${paymentMethod === 'whatsapp' ? 'text-green-600' : 'text-gray-400'}`} />
                   <div>
@@ -495,24 +567,28 @@ const Checkout: React.FC = () => {
                 </label>
               </div>
 
-              {/* Card Payment Widget */}
+              {/* Card Payment Button */}
               {paymentMethod === 'card' && (
                 <div className="mt-6">
-                  <div 
-                    id="sumup-card-widget" 
-                    className="min-h-[300px] border border-gray-200 rounded-lg p-4 bg-gray-50"
+                  <button
+                    onClick={handleCardPayment}
+                    disabled={isProcessing || !customerInfo.name || !customerInfo.email || !customerInfo.phone}
+                    className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {!sdkLoaded && (
-                      <div className="flex items-center justify-center h-[300px]">
-                        <div className="text-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto mb-4"></div>
-                          <p className="text-gray-500">Chargement du formulaire de paiement...</p>
-                        </div>
-                      </div>
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        Paiement en cours...
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-5 w-5" />
+                        Payer {formatPrice(total)}
+                      </>
                     )}
-                  </div>
+                  </button>
                   <p className="text-xs text-gray-500 text-center mt-4">
-                    🔒 Paiement sécurisé par SumUp
+                    🔒 Paiement sécurisé par SumUp - Vous serez redirigé vers une page de paiement sécurisée
                   </p>
                 </div>
               )}
@@ -522,10 +598,19 @@ const Checkout: React.FC = () => {
                 <button
                   onClick={handleWhatsAppOrder}
                   disabled={isProcessing || !customerInfo.name || !customerInfo.phone}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  <MessageCircle className="h-5 w-5" />
-                  {isProcessing ? 'Envoi...' : `Commander via WhatsApp - ${formatPrice(total)}`}
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      Envoi en cours...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="h-5 w-5" />
+                      Commander via WhatsApp - {formatPrice(total)}
+                    </>
+                  )}
                 </button>
               )}
             </motion.div>

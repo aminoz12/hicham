@@ -11,6 +11,7 @@ import Products from '@/pages/Products';
 import ProductDetail from '@/pages/ProductDetail';
 import Checkout from '@/pages/Checkout';
 import CheckoutSuccess from '@/pages/CheckoutSuccess';
+import PaymentReturn from '@/pages/PaymentReturn';
 import Cart from '@/components/Cart';
 import MobileMenu from '@/components/MobileMenu';
 import SearchModal from '@/components/SearchModal';
@@ -174,6 +175,9 @@ function App() {
                 <Footer />
               </>
             } />
+            
+            {/* Payment Return - No Header/Footer (may be in popup) */}
+            <Route path="/payment/return" element={<PaymentReturn />} />
 
             {/* Admin Routes - No Header & Footer */}
             <Route path="/admin/login" element={<AdminLogin />} />

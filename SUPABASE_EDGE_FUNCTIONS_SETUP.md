@@ -72,3 +72,4 @@ After deployment, the frontend will automatically use the Edge Functions as prox
 
 
 
+
