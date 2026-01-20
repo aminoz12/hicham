@@ -7,7 +7,7 @@ import { formatPrice } from '@/utils';
 import { toast } from 'react-hot-toast';
 import { 
   generateOrderReference,
-  redirectToSumUpPayment
+  redirectToSumUpCheckout
 } from '@/services/sumupService';
 import { 
   findPromotionByCode, 
@@ -181,14 +181,20 @@ const Checkout: React.FC = () => {
       
       toast.success('Commande créée! Redirection vers le paiement...');
       
-      // Redirect to SumUp Pay Link
-      redirectToSumUpPayment({
+      // Redirect to SumUp Checkout (customers pay with Card, Apple Pay, Google Pay)
+      const redirected = await redirectToSumUpCheckout({
         amount: total,
         currency: 'EUR',
-        title: 'Hijabi Inoor',
         description: description,
-        orderId: orderReference
+        reference: orderReference,
+        redirectUrl: `${window.location.origin}/checkout/success?reference=${orderReference}`,
       });
+
+      if (!redirected) {
+        toast.error('Erreur lors de la création du paiement. Veuillez réessayer.');
+        setIsProcessing(false);
+        setOrderCreated(false);
+      }
 
     } catch (error: any) {
       console.error('Error creating order:', error);
@@ -210,30 +216,34 @@ const Checkout: React.FC = () => {
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
           <CheckCircle className="h-20 w-20 text-green-500 mx-auto mb-6" />
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Commande créée avec succès!
+            Redirection vers le paiement...
           </h1>
           <p className="text-gray-600 mb-2">
             Référence: <strong>{currentOrderRef}</strong>
           </p>
           <p className="text-gray-600 mb-8">
-            Une nouvelle fenêtre s'est ouverte pour le paiement via SumUp.
+            Vous allez être redirigé vers la page de paiement sécurisée.
             <br />
-            Si la fenêtre ne s'est pas ouverte, cliquez sur le bouton ci-dessous.
+            Vous pourrez payer par carte bancaire, Apple Pay ou Google Pay.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => {
-                redirectToSumUpPayment({
+              onClick={async () => {
+                setIsProcessing(true);
+                await redirectToSumUpCheckout({
                   amount: total,
                   currency: 'EUR',
-                  title: 'Hijabi Inoor',
                   description: `Commande ${currentOrderRef}`,
+                  reference: currentOrderRef || undefined,
+                  redirectUrl: `${window.location.origin}/checkout/success?reference=${currentOrderRef}`,
                 });
+                setIsProcessing(false);
               }}
+              disabled={isProcessing}
               className="btn-primary flex items-center justify-center gap-2"
             >
               <ExternalLink className="h-5 w-5" />
-              Ouvrir le paiement SumUp
+              {isProcessing ? 'Chargement...' : 'Aller au paiement'}
             </button>
             <button
               onClick={() => navigate('/products')}
