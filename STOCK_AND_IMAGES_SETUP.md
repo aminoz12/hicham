@@ -169,3 +169,5 @@ This shows all products with less than 10 items remaining.
   UPDATE products SET stock_quantity = 0 WHERE stock_quantity < 0;
   ```
 
+
+

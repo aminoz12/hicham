@@ -70,3 +70,5 @@ In Supabase Dashboard → Edge Functions → Secrets:
 After deployment, the frontend will automatically use the Edge Functions as proxy. Make sure your `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set in your `.env.local` file.
 
 
+
+

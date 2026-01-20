@@ -85,3 +85,5 @@ WITH CHECK (bucket_id = 'products');
 **⚠️ Attention**: Cette dernière politique permet à n'importe qui d'uploader. Utilisez-la uniquement en développement ou si vous avez une autre couche de sécurité.
 
 
+
+

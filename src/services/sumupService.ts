@@ -1,105 +1,105 @@
 /**
- * SumUp Checkout Links Service
- * Simple integration using SumUp Checkout Links - no backend required!
+ * SumUp Pay Link Service
+ * Simple integration using SumUp Pay Links - no backend required!
  * 
- * SumUp Checkout Links allow you to redirect users directly to a payment page
- * with amount and other details in the URL parameters.
+ * SumUp Pay Links allow merchants to share a payment link
+ * Format: https://sumup.me/{merchant-code}?amount={amount}&currency={currency}
  */
 
-const SUMUP_CHECKOUT_LINKS_URL = 'https://me.sumup.com/checkout-links';
-
-// SumUp credentials
-const getSumUpCredentials = () => {
-  return {
-    merchantId: import.meta.env.VITE_SUMUP_MERCHANT_ID || 'MXQYJZNR',
-    publicKey: import.meta.env.VITE_SUMUP_PUBLIC_KEY || 'sup_pk_pduzGQ34gpck2xZeJT6ySGeqiigjUDgBg',
-  };
+// SumUp credentials - the merchant code from your SumUp profile
+const getSumUpMerchantCode = () => {
+  return import.meta.env.VITE_SUMUP_MERCHANT_CODE || 'MXQYJZNR';
 };
 
-export interface SumUpCheckoutLinkParams {
+export interface SumUpPayLinkParams {
   amount: number;
   currency?: string;
+  title?: string;
   description?: string;
-  merchantCode: string;
-  returnUrl?: string;
-  reference?: string;
+  orderId?: string;
 }
 
 /**
- * Generate SumUp Checkout Link URL
- * This creates a direct payment link that users can be redirected to
+ * Generate SumUp Pay Link URL
  * 
  * @param amount - Payment amount
  * @param currency - Currency code (default: EUR)
+ * @param title - Payment title
  * @param description - Payment description
- * @param returnUrl - URL to redirect after payment
- * @param reference - Order reference number
- * @returns SumUp Checkout Link URL
+ * @param orderId - Order reference for tracking
+ * @returns SumUp Pay Link URL
  */
-export function generateSumUpCheckoutLink(
-  amount: number,
-  currency: string = 'EUR',
-  description?: string,
-  returnUrl?: string,
-  reference?: string
-): string {
-  const credentials = getSumUpCredentials();
+export function generateSumUpPayLink(params: SumUpPayLinkParams): string {
+  const merchantCode = getSumUpMerchantCode();
   
-  // SumUp Checkout Links format:
-  // https://me.sumup.com/checkout-links/{merchant_code}?amount={amount}&currency={currency}&description={description}&return_url={return_url}&reference={reference}
+  // SumUp Pay Link format: https://sumup.me/{merchant-code}
+  const baseUrl = `https://sumup.me/${merchantCode}`;
   
-  const params = new URLSearchParams();
-  params.append('amount', amount.toFixed(2));
-  params.append('currency', currency);
+  const urlParams = new URLSearchParams();
   
-  if (description) {
-    params.append('description', description);
+  // Amount is required
+  urlParams.append('amount', params.amount.toFixed(2));
+  
+  // Currency (default EUR)
+  if (params.currency) {
+    urlParams.append('currency', params.currency);
   }
   
-  if (returnUrl) {
-    params.append('return_url', returnUrl);
+  // Title for the payment
+  if (params.title) {
+    urlParams.append('title', params.title);
   }
   
-  if (reference) {
-    params.append('reference', reference);
+  // Description
+  if (params.description) {
+    urlParams.append('description', params.description);
   }
   
-  const checkoutUrl = `${SUMUP_CHECKOUT_LINKS_URL}/${credentials.merchantId}?${params.toString()}`;
-  
-  return checkoutUrl;
+  return `${baseUrl}?${urlParams.toString()}`;
 }
 
 /**
- * Generate a unique checkout reference
+ * Generate a unique order reference
+ */
+export function generateOrderReference(): string {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  return `HN-${timestamp}-${random}`;
+}
+
+/**
+ * Redirect to SumUp Pay Link
+ */
+export function redirectToSumUpPayment(params: SumUpPayLinkParams) {
+  const payLinkUrl = generateSumUpPayLink(params);
+  console.log('Redirecting to SumUp Pay Link:', payLinkUrl);
+  
+  // Open in new tab so user can return to store
+  window.open(payLinkUrl, '_blank');
+}
+
+/**
+ * Legacy functions for backward compatibility
  */
 export function generateCheckoutReference(): string {
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 9);
-  return `HIJABI-${timestamp}-${random}`.toUpperCase();
+  return generateOrderReference();
 }
 
-/**
- * Redirect to SumUp Checkout Link
- */
 export function redirectToSumUpCheckout(
   amount: number,
   currency: string = 'EUR',
   description?: string,
-  returnUrl?: string,
-  reference?: string
+  _returnUrl?: string,
+  _reference?: string
 ) {
-  const checkoutUrl = generateSumUpCheckoutLink(amount, currency, description, returnUrl, reference);
-  window.location.href = checkoutUrl;
+  redirectToSumUpPayment({
+    amount,
+    currency,
+    title: 'Hijabi Inoor',
+    description
+  });
 }
 
-/**
- * Parse SumUp return URL parameters
- * SumUp redirects back with these parameters:
- * - transaction_code: The transaction ID
- * - status: Payment status (SUCCESSFUL, FAILED, etc.)
- * - amount: The amount paid
- * - currency: Currency code
- */
 export function parseSumUpReturnParams(searchParams: URLSearchParams): {
   transactionCode?: string;
   status?: string;
@@ -108,10 +108,10 @@ export function parseSumUpReturnParams(searchParams: URLSearchParams): {
   reference?: string;
 } {
   return {
-    transactionCode: searchParams.get('transaction_code') || undefined,
-    status: searchParams.get('status') || undefined,
+    transactionCode: searchParams.get('transaction_code') || searchParams.get('tx_code') || undefined,
+    status: searchParams.get('status') || searchParams.get('payment_status') || undefined,
     amount: searchParams.get('amount') || undefined,
     currency: searchParams.get('currency') || undefined,
-    reference: searchParams.get('reference') || undefined,
+    reference: searchParams.get('reference') || searchParams.get('order_id') || undefined,
   };
 }

@@ -163,3 +163,5 @@ $$ LANGUAGE plpgsql;
 -- 3. Update navigation to show subcategory dropdown
 -- 4. Update product filtering to support subcategories
 
+
+

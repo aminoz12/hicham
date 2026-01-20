@@ -56,3 +56,5 @@ Le service `sumupService.ts` détecte automatiquement :
 Le proxy local est **uniquement pour le développement**. Pour la production, utilisez les Edge Functions Supabase ou un autre service backend.
 
 
+
+
