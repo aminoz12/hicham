@@ -156,12 +156,12 @@ const Checkout: React.FC = () => {
     console.log('Payment success:', result);
     setPaymentStatus('success');
     
+    // Update reference if returned from payment
+    if (result.reference) {
+      setCurrentOrderRef(result.reference);
+    }
+    
     try {
-      const orderReference = result.reference || currentOrderRef || generateOrderReference();
-      
-      // Update order status in database
-      // Note: Order was already created before payment
-      
       // Increment promotion usage if used
       if (appliedPromotion?.promotion.id) {
         await incrementPromotionUsage(appliedPromotion.promotion.id);
