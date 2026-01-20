@@ -1,25 +1,24 @@
 /**
- * SumUp Checkout Service
- * Uses Supabase Edge Function to create SumUp Checkout sessions
- * Customers can pay with Credit Card, Apple Pay, Google Pay - NO SumUp account needed!
+ * SumUp Card Widget Service
+ * Uses SumUp's JavaScript SDK with PUBLIC key - no backend needed!
+ * Customers can pay with Credit Card directly on your site
  */
 
-import { supabase } from '@/lib/supabase';
+// Your SumUp Public Key (starts with sup_pk_)
+const getSumUpPublicKey = () => {
+  return import.meta.env.VITE_SUMUP_PUBLIC_KEY || 'sup_pk_pduzGQ34gpck2xZeJT6ySGeqiigjUDgBg';
+};
 
-export interface CheckoutParams {
+// Your SumUp Merchant Code
+const getSumUpMerchantCode = () => {
+  return import.meta.env.VITE_SUMUP_MERCHANT_CODE || 'MXQYJZNR';
+};
+
+export interface PaymentParams {
   amount: number;
   currency?: string;
   description?: string;
   reference?: string;
-  redirectUrl?: string;
-}
-
-export interface CheckoutResponse {
-  success: boolean;
-  checkout_id?: string;
-  checkout_url?: string;
-  hosted_checkout_url?: string;
-  error?: string;
 }
 
 /**
@@ -32,74 +31,120 @@ export function generateOrderReference(): string {
 }
 
 /**
- * Create a SumUp Checkout session via Supabase Edge Function
- * Returns a URL where customers can pay (no SumUp account needed)
+ * Load SumUp Card Widget SDK
  */
-export async function createSumUpCheckout(params: CheckoutParams): Promise<CheckoutResponse> {
+export function loadSumUpSDK(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Check if already loaded
+    if ((window as any).SumUpCard) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://gateway.sumup.com/gateway/ecom/card/v2/sdk.js';
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error('Failed to load SumUp SDK'));
+    document.head.appendChild(script);
+  });
+}
+
+/**
+ * Initialize SumUp Card Widget in a container
+ * @param containerId - ID of the DOM element to mount the widget
+ * @param params - Payment parameters
+ * @param onSuccess - Callback when payment succeeds
+ * @param onError - Callback when payment fails
+ */
+export async function initSumUpCardWidget(
+  containerId: string,
+  params: PaymentParams,
+  onSuccess: (result: any) => void,
+  onError: (error: any) => void
+): Promise<any> {
   try {
-    const { data, error } = await supabase.functions.invoke('create-checkout', {
-      body: {
-        amount: params.amount,
-        currency: params.currency || 'EUR',
-        description: params.description || 'Hijabi Inoor Order',
-        reference: params.reference || generateOrderReference(),
-        redirect_url: params.redirectUrl || `${window.location.origin}/checkout/success`,
+    await loadSumUpSDK();
+
+    const SumUpCard = (window as any).SumUpCard;
+    
+    if (!SumUpCard) {
+      throw new Error('SumUp SDK not available');
+    }
+
+    const publicKey = getSumUpPublicKey();
+    const merchantCode = getSumUpMerchantCode();
+
+    const card = SumUpCard.mount({
+      id: containerId,
+      publicKey: publicKey,
+      merchantCode: merchantCode,
+      amount: params.amount,
+      currency: params.currency || 'EUR',
+      locale: 'fr-FR',
+      onResponse: (type: string, body: any) => {
+        console.log('SumUp response:', type, body);
+        if (type === 'success') {
+          onSuccess(body);
+        } else if (type === 'error') {
+          onError(body);
+        }
       },
     });
 
-    if (error) {
-      console.error('Error creating SumUp checkout:', error);
-      return { success: false, error: error.message };
-    }
-
-    return {
-      success: true,
-      checkout_id: data.checkout_id,
-      checkout_url: data.checkout_url,
-      hosted_checkout_url: data.hosted_checkout_url,
-    };
-  } catch (error: any) {
-    console.error('Error in createSumUpCheckout:', error);
-    return { success: false, error: error.message || 'Failed to create checkout' };
+    return card;
+  } catch (error) {
+    console.error('Error initializing SumUp Card Widget:', error);
+    onError(error);
+    throw error;
   }
 }
 
 /**
- * Redirect to SumUp hosted checkout page
- * Customer can pay with Card, Apple Pay, Google Pay
+ * Create a direct payment link (opens in new tab)
+ * Uses the merchant profile page with pre-filled amount
  */
-export async function redirectToSumUpCheckout(params: CheckoutParams): Promise<boolean> {
-  const result = await createSumUpCheckout(params);
+export function createPaymentLink(params: PaymentParams): string {
+  const merchantCode = getSumUpMerchantCode();
+  const urlParams = new URLSearchParams();
   
-  if (result.success && result.hosted_checkout_url) {
-    console.log('Redirecting to SumUp Checkout:', result.hosted_checkout_url);
-    window.location.href = result.hosted_checkout_url;
-    return true;
+  urlParams.append('amount', params.amount.toFixed(2));
+  urlParams.append('currency', params.currency || 'EUR');
+  
+  if (params.description) {
+    urlParams.append('description', params.description);
   }
-  
-  console.error('Failed to create checkout:', result.error);
-  return false;
+
+  // This is the SumUp payment request link format
+  return `https://sumup.me/${merchantCode}?${urlParams.toString()}`;
 }
 
 /**
- * Alternative: Open checkout in new tab
+ * Open WhatsApp with order details as fallback
  */
-export async function openSumUpCheckout(params: CheckoutParams): Promise<boolean> {
-  const result = await createSumUpCheckout(params);
+export function openWhatsAppOrder(params: PaymentParams & { items?: string }): void {
+  const phone = '33600000000'; // Replace with your WhatsApp number
+  const message = encodeURIComponent(
+    `🛒 Nouvelle commande Hijabi Inoor\n\n` +
+    `📦 Référence: ${params.reference || generateOrderReference()}\n` +
+    `💰 Total: ${params.amount.toFixed(2)} €\n` +
+    `${params.items ? `\n📋 Articles:\n${params.items}` : ''}\n\n` +
+    `Je souhaite passer commande.`
+  );
   
-  if (result.success && result.hosted_checkout_url) {
-    console.log('Opening SumUp Checkout:', result.hosted_checkout_url);
-    window.open(result.hosted_checkout_url, '_blank');
-    return true;
-  }
-  
-  console.error('Failed to create checkout:', result.error);
-  return false;
+  window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
 }
 
-// Legacy compatibility
+// Legacy compatibility functions
 export function generateCheckoutReference(): string {
   return generateOrderReference();
+}
+
+export async function redirectToSumUpCheckout(params: PaymentParams): Promise<boolean> {
+  // For now, open the payment link in a new tab
+  const link = createPaymentLink(params);
+  window.open(link, '_blank');
+  return true;
 }
 
 export function redirectToSumUpPayment(params: {
@@ -109,12 +154,13 @@ export function redirectToSumUpPayment(params: {
   description?: string;
   orderId?: string;
 }) {
-  return redirectToSumUpCheckout({
+  const link = createPaymentLink({
     amount: params.amount,
     currency: params.currency,
     description: params.description || params.title,
     reference: params.orderId,
   });
+  window.open(link, '_blank');
 }
 
 export function parseSumUpReturnParams(searchParams: URLSearchParams): {
@@ -125,7 +171,7 @@ export function parseSumUpReturnParams(searchParams: URLSearchParams): {
   reference?: string;
 } {
   return {
-    transactionCode: searchParams.get('transaction_code') || searchParams.get('tx_code') || searchParams.get('checkout_id') || undefined,
+    transactionCode: searchParams.get('transaction_code') || searchParams.get('tx_code') || undefined,
     status: searchParams.get('status') || searchParams.get('payment_status') || undefined,
     amount: searchParams.get('amount') || undefined,
     currency: searchParams.get('currency') || undefined,
