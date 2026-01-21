@@ -71,9 +71,10 @@ const Checkout: React.FC = () => {
     address2: '',
   });
 
-  // Calculate subtotal (with special hijab pricing)
+  // Calculate subtotal (with special hijab pricing for 13€ hijabs only)
   const subtotal = items.reduce((sum, item) => {
-    if (item.product.category === 'hijabs') {
+    // Special pricing ONLY for hijabs priced at 13€: 2 for 25€
+    if (item.product.category === 'hijabs' && item.product.price === 13) {
       if (item.quantity >= 2) {
         const pairs = Math.floor(item.quantity / 2);
         const remaining = item.quantity % 2;
@@ -620,13 +621,13 @@ const Checkout: React.FC = () => {
                       </p>
                     </div>
                     <p className="text-sm font-semibold text-gray-900">
-                      {formatPrice(
-                        item.product.category === 'hijabs'
-                          ? (item.quantity >= 2
-                              ? Math.floor(item.quantity / 2) * 25 + (item.quantity % 2) * 13
-                              : item.quantity * 13)
-                          : item.product.price * item.quantity
-                      )}
+{formatPrice(
+                          item.product.category === 'hijabs' && item.product.price === 13
+                            ? (item.quantity >= 2
+                                ? Math.floor(item.quantity / 2) * 25 + (item.quantity % 2) * 13
+                                : item.quantity * 13)
+                            : item.product.price * item.quantity
+                        )}
                     </p>
                   </div>
                 ))}

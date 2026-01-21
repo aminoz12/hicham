@@ -4,6 +4,7 @@ import Hero from '@/components/Hero';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import Categories from '@/components/Categories';
 import TestimonialsFr from '@/components/TestimonialsFr';
+import FAQ from '@/components/FAQ';
 import NewsletterFr from '@/components/NewsletterFr';
 import { useUIStore } from '@/store/uiStore';
 
@@ -37,6 +38,9 @@ const Home: React.FC = () => {
 
       {/* Témoignages en français */}
       <TestimonialsFr />
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* French Newsletter */}
       <NewsletterFr />

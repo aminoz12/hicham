@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import ProductGrid from '@/components/ProductGrid';
 import FilterModal from '@/components/FilterModal';
@@ -9,6 +9,7 @@ import { Product, FilterOptions, ProductCategory } from '@/types';
 
 const Products: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [filters, setFilters] = useState<FilterOptions>({});
@@ -42,8 +43,18 @@ const Products: React.FC = () => {
     loadProducts();
   }, []);
 
-  // Get category and subcategory from URL
-  const category = searchParams.get('category') as ProductCategory | null;
+  // Get category from URL path or search params
+  const getCategoryFromPath = (): ProductCategory | null => {
+    const path = location.pathname.toLowerCase();
+    if (path === '/hijabs') return 'hijabs';
+    if (path === '/abayas') return 'abayas';
+    if (path === '/ensemble') return 'ensemble';
+    if (path === '/boxes-cadeau') return 'boxes-cadeau';
+    return null;
+  };
+
+  const pathCategory = getCategoryFromPath();
+  const category = pathCategory || (searchParams.get('category') as ProductCategory | null);
   const subcategory = searchParams.get('subcategory');
   const search = searchParams.get('search');
 

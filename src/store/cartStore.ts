@@ -100,19 +100,18 @@ export const useCartStore = create<CartStore>()(
 
       getTotal: () => {
         return get().items.reduce((sum, item) => {
-          // Special pricing for hijabs: 13 euro for 1, 25 euro for 2
-          if (item.product.category === 'hijabs') {
+          // Special pricing ONLY for hijabs priced at 13€: 2 for 25€
+          if (item.product.category === 'hijabs' && item.product.price === 13) {
             if (item.quantity >= 2) {
-              // For 2 or more hijabs, use 25 euro for every 2 hijabs, then 13 euro for remaining
+              // For 2 or more 13€ hijabs: 25€ for every 2, then 13€ for remaining
               const pairs = Math.floor(item.quantity / 2);
               const remaining = item.quantity % 2;
               return sum + (pairs * 25) + (remaining * 13);
             } else {
-              // For 1 hijab, use 13 euro
               return sum + (item.quantity * 13);
             }
           } else {
-            // For other products (abayas), use regular pricing
+            // For all other products, use regular pricing
             return sum + (item.product.price * item.quantity);
           }
         }, 0);

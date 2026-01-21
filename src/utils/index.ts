@@ -12,19 +12,18 @@ export const calculateDiscount = (originalPrice: number, salePrice: number): num
 };
 
 export const calculateItemPrice = (product: any, quantity: number): number => {
-  // Special pricing for hijabs: 13 euro for 1, 25 euro for 2
-  if (product.category === 'hijabs') {
+  // Special pricing ONLY for hijabs priced at 13€: 2 for 25€
+  if (product.category === 'hijabs' && product.price === 13) {
     if (quantity >= 2) {
-      // For 2 or more hijabs, use 25 euro for every 2 hijabs, then 13 euro for remaining
+      // For 2 or more 13€ hijabs: 25€ for every 2, then 13€ for remaining
       const pairs = Math.floor(quantity / 2);
       const remaining = quantity % 2;
       return (pairs * 25) + (remaining * 13);
     } else {
-      // For 1 hijab, use 13 euro
       return quantity * 13;
     }
   } else {
-    // For other products (abayas), use regular pricing
+    // For all other products, use regular pricing
     return product.price * quantity;
   }
 };

@@ -11,11 +11,8 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: 'en', name: 'English', flag: '🇺🇸', dir: 'ltr' },
   { code: 'fr', name: 'Français', flag: '🇫🇷', dir: 'ltr' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹', dir: 'ltr' },
-  { code: 'ar', name: 'العربية', flag: '🇸🇦', dir: 'rtl' },
-  { code: 'es', name: 'Español', flag: '🇪🇸', dir: 'ltr' }
+  { code: 'en', name: 'English', flag: '🇬🇧', dir: 'ltr' },
 ];
 
 const LanguageSwitcher: React.FC = () => {
@@ -106,12 +103,6 @@ const LanguageSwitcher: React.FC = () => {
                 ))}
               </div>
               
-              {/* Footer */}
-              <div className="border-t border-gray-100 px-4 py-2">
-                <p className="text-xs text-gray-500 text-center">
-                  More languages coming soon
-                </p>
-              </div>
             </motion.div>
           </>
         )}
