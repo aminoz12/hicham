@@ -45,7 +45,7 @@ const Categories: React.FC = () => {
       id: 'hijabs',
       name: 'Hijabs',
       description: 'Hijabs de qualité supérieure en différents tissus et styles',
-      image: '/hijabs.png',
+      image: '/hijabs.jpeg',
       featured: true,
       gradient: 'from-purple-500 to-pink-500'
     },
