@@ -135,6 +135,21 @@ const FeaturedProducts: React.FC = () => {
           ))}
           </div>
         )}
+
+        {/* View All Products Button */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-12 flex justify-center"
+        >
+          <Link
+            to="/products"
+            className="inline-flex items-center justify-center px-8 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors duration-300"
+          >
+            Voir tous nos produits
+          </Link>
+        </motion.div>
       </div>
     </section>
   );
