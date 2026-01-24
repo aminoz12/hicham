@@ -116,7 +116,7 @@ const ProductDetail: React.FC = () => {
   };
 
   const features = [
-    { icon: Truck, text: t('freeShipping') + ' sur les commandes de plus de 75€' },
+    { icon: Truck, text: t('freeShipping') + ' sur les commandes de plus de 69€' },
     { icon: RotateCcw, text: 'Retours sous 30 jours' },
     { icon: MessageCircle, text: tHome('hero.features.orderViaWhatsApp') }
   ];

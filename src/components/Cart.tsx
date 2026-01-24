@@ -226,7 +226,7 @@ const Cart: React.FC = () => {
 
             {/* Order Info */}
             <div className="text-xs text-gray-500 text-center">
-              💳 Secure payment with SumUp • Free shipping on orders over €75
+              💳 Secure payment with SumUp • Free shipping on orders over €69
             </div>
           </motion.div>
         )}

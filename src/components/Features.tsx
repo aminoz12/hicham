@@ -24,7 +24,7 @@ const Features: React.FC = () => {
     {
       icon: Truck,
       title: 'Free & Fast Shipping',
-      description: 'Free shipping on orders over $75. Express delivery available.',
+      description: 'Free shipping on orders over €69. Express delivery available.',
       color: 'from-blue-500 to-blue-600'
     },
     {
