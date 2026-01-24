@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useTranslation } from '@/hooks/useTranslation';
 import { fetchAllProducts } from '@/services/productService';
 import type { Product } from '@/types';
@@ -43,7 +45,7 @@ const Categories: React.FC = () => {
       id: 'hijabs',
       name: 'Hijabs',
       description: 'Hijabs de qualité supérieure en différents tissus et styles',
-      image: '/hijabs.jpeg',
+      image: '/hijabs.png',
       featured: true,
       gradient: 'from-purple-500 to-pink-500'
     },
@@ -100,19 +102,14 @@ const Categories: React.FC = () => {
               <Link to={`/${category.id}`} className="block">
                 {/* Image */}
                 <div className="relative overflow-hidden mb-4 bg-gray-50">
-                  <img
+                  <LazyLoadImage
                     src={category.image}
                     alt={category.name}
-                    loading="lazy"
+                    effect="blur"
+                    placeholderSrc="/logo.png"
+                    width="100%"
+                    height="100%"
                     className="w-full h-[300px] sm:h-[350px] object-cover group-hover:opacity-95 transition-opacity duration-300"
-                    onError={(e) => {
-                      console.error(`Failed to load image: ${category.image}`, e);
-                      // Fallback to logo if image fails to load
-                      const target = e.target as HTMLImageElement;
-                      if (target && target.src !== '/logo.png') {
-                        target.src = '/logo.png';
-                      }
-                    }}
                   />
                 </div>
 
