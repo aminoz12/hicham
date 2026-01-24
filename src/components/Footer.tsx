@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
 
   const socialLinks = [
     { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Instagram, href: 'https://www.instagram.com/hijabinour.shop/', label: 'Instagram', target: '_blank', rel: 'noopener noreferrer' },
+    { icon: Instagram, href: 'https://www.instagram.com/hijabinour_hn/', label: 'Instagram', target: '_blank', rel: 'noopener noreferrer' },
     { icon: Twitter, href: '#', label: 'Twitter' },
     { icon: Youtube, href: '#', label: 'YouTube' }
   ];
