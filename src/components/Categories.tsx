@@ -110,6 +110,14 @@ const Categories: React.FC = () => {
                     width="100%"
                     height="100%"
                     className="w-full h-[300px] sm:h-[350px] object-cover group-hover:opacity-95 transition-opacity duration-300"
+                    onError={(e) => {
+                      console.error(`Failed to load image: ${category.image}`, e);
+                      // Fallback to logo if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      if (target && target.src !== '/logo.png') {
+                        target.src = '/logo.png';
+                      }
+                    }}
                   />
                 </div>
 
