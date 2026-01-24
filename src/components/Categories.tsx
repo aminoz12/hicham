@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useTranslation } from '@/hooks/useTranslation';
+import { fetchAllProducts } from '@/services/productService';
+import type { Product } from '@/types';
 
 const Categories: React.FC = () => {
   const { ref, inView } = useInView({
@@ -12,6 +14,31 @@ const Categories: React.FC = () => {
     triggerOnce: true
   });
   const { t } = useTranslation('home');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setIsLoading(true);
+        const all = await fetchAllProducts();
+        setProducts(all);
+      } catch (e) {
+        console.error('Error loading products for categories section', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  const getCountForCategory = (categoryId: string) => {
+    if (!products.length) return '';
+    const count = products.filter(p => p.category === categoryId).length;
+    if (count === 0) return '';
+    return `${count} ${t('categories.items')}`;
+  };
 
   const categories = [
     {
@@ -19,7 +46,6 @@ const Categories: React.FC = () => {
       name: 'Hijabs',
       description: 'Hijabs de qualité supérieure en différents tissus et styles',
       image: '/hijabs.png',
-      count: '4 articles',
       featured: true,
       gradient: 'from-purple-500 to-pink-500'
     },
@@ -28,7 +54,6 @@ const Categories: React.FC = () => {
       name: 'Abayas',
       description: 'Abayas élégantes pour toutes les occasions',
       image: '/abaya.png',
-      count: '4 articles',
       featured: true,
       gradient: 'from-blue-500 to-indigo-500'
     },
@@ -37,7 +62,6 @@ const Categories: React.FC = () => {
       name: 'Ensemble',
       description: 'Ensembles élégants et raffinés',
       image: '/c1.png',
-      count: '4 articles',
       featured: true,
       gradient: 'from-pink-500 to-rose-500'
     },
@@ -46,7 +70,6 @@ const Categories: React.FC = () => {
       name: 'Boxes Cadeau',
       description: 'Boxes cadeau élégantes et personnalisées',
       image: '/cofferet.jpeg',
-      count: '4 articles',
       featured: true,
       gradient: 'from-green-500 to-emerald-500'
     }
@@ -95,9 +118,11 @@ const Categories: React.FC = () => {
                   <h3 className="text-base font-medium text-[#0B0B0D] mb-1 group-hover:opacity-70 transition-opacity">
                     {category.name}
                   </h3>
-                  <p className="text-sm text-gray-600">
-                    {category.count.replace('items', t('categories.items'))}
-                  </p>
+                  {!isLoading && (
+                    <p className="text-sm text-gray-600">
+                      {getCountForCategory(category.id)}
+                    </p>
+                  )}
                 </div>
               </Link>
             </motion.div>

@@ -303,7 +303,7 @@ const Checkout: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Helmet>
         <title>Checkout - Hijabi Inoor</title>
-        <meta name="description" content="Finalisez votre commande avec paiement sécurisé" />
+        <meta name="description" content="Finalisez votre commande en quelques étapes simples" />
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -536,32 +536,6 @@ const Checkout: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="bg-white rounded-xl shadow-sm p-6"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 text-primary-600" />
-                </div>
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Paiement sécurisé
-                </h2>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <div className="flex items-center gap-3 text-sm text-gray-600">
-                  <img src="https://cdn.sumup.com/img/logos/sumup-logo.svg" alt="SumUp" className="h-6" />
-                  <span>Paiement sécurisé par carte bancaire</span>
-                </div>
-                <div className="flex gap-2 mt-3">
-                  <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/flags/4x3/visa.svg" alt="Visa" className="h-8 w-auto rounded" />
-                  <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/flags/4x3/mastercard.svg" alt="Mastercard" className="h-8 w-auto rounded" />
-                  <div className="h-8 px-3 bg-black rounded flex items-center">
-                    <span className="text-white text-xs font-semibold">Apple Pay</span>
-                  </div>
-                  <div className="h-8 px-3 bg-white border rounded flex items-center">
-                    <span className="text-gray-800 text-xs font-semibold">Google Pay</span>
-                  </div>
-                </div>
-              </div>
-
               <button
                 onClick={handlePayment}
                 disabled={isProcessing}
@@ -579,10 +553,6 @@ const Checkout: React.FC = () => {
                   </>
                 )}
               </button>
-              
-              <p className="text-xs text-gray-500 text-center mt-4">
-                🔒 Vos données sont protégées par un cryptage SSL 256-bit
-              </p>
             </motion.div>
           </div>
 
@@ -663,27 +633,6 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
 
-              {/* Trust badges */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="grid grid-cols-2 gap-3 text-xs text-gray-500">
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
-                    Paiement sécurisé
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
-                    Livraison rapide
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
-                    Satisfait ou remboursé
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-500">✓</span>
-                    Service client 7j/7
-                  </div>
-                </div>
-              </div>
             </motion.div>
           </div>
         </div>
