@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useTranslation } from '@/hooks/useTranslation';
 import { fetchAllProducts } from '@/services/productService';
 import type { Product } from '@/types';
@@ -102,13 +100,10 @@ const Categories: React.FC = () => {
               <Link to={`/${category.id}`} className="block">
                 {/* Image */}
                 <div className="relative overflow-hidden mb-4 bg-gray-50">
-                  <LazyLoadImage
+                  <img
                     src={category.image}
                     alt={category.name}
-                    effect="blur"
-                    placeholderSrc="/logo.png"
-                    width="100%"
-                    height="100%"
+                    loading="lazy"
                     className="w-full h-[300px] sm:h-[350px] object-cover group-hover:opacity-95 transition-opacity duration-300"
                     onError={(e) => {
                       console.error(`Failed to load image: ${category.image}`, e);
