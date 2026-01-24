@@ -48,7 +48,7 @@ serve(async (req) => {
         checkout_reference: reference || `HN-${Date.now()}`,
         amount: amount,
         currency: currency || 'EUR',
-        description: description || 'Hijabi Inoor Order',
+        description: description || 'HIJABI NOUR Order',
         redirect_url: redirect_url || 'https://hijabinour.com/checkout/success',
         return_url: redirect_url || 'https://hijabinour.com/checkout/success',
       }),
@@ -87,6 +87,8 @@ serve(async (req) => {
     )
   }
 })
+
+
 
 
 

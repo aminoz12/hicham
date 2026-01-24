@@ -75,7 +75,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
       amount: parseFloat(amount.toFixed(2)),
       currency: currency.toUpperCase(),
       merchant_code: SUMUP_MERCHANT_CODE,
-      description: description || `Commande Hijabi Inoor - ${checkoutReference}`,
+      description: description || `Commande HIJABI NOUR - ${checkoutReference}`,
       return_url: `${finalReturnUrl}?reference=${checkoutReference}`,
       // Enable hosted checkout - this is the key for guest payments!
       hosted_checkout: {
@@ -157,5 +157,7 @@ const handler: Handler = async (event: HandlerEvent, context: HandlerContext) =>
 };
 
 export { handler };
+
+
 
 

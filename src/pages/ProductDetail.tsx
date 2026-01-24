@@ -124,7 +124,7 @@ const ProductDetail: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>{product.name} - Hijabi Inoor</title>
+        <title>{product.name} - HIJABI NOUR</title>
         <meta name="description" content={product.description} />
         <meta property="og:title" content={product.name} />
         <meta property="og:description" content={product.description} />

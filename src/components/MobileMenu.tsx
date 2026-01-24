@@ -235,7 +235,7 @@ const MobileMenu: React.FC = () => {
         {/* Footer */}
         <div className="border-t border-gray-200 p-6">
           <div className="text-center text-sm text-gray-500">
-            <p>© 2024 Hijabi Inoor</p>
+            <p>© 2024 HIJABI NOUR</p>
             <p className="mt-1">Premium Modest Fashion</p>
           </div>
         </div>

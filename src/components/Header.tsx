@@ -169,7 +169,7 @@ const Header: React.FC = () => {
               >
                 <LazyLoadImage
                   src="/logo.png"
-                  alt="Hijabi Inoor Logo"
+                  alt="HIJABI NOUR Logo"
                   effect="blur"
                   placeholderSrc="/logo.png"
                   width="auto"

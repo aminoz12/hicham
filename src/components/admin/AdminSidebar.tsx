@@ -49,7 +49,7 @@ export function AdminSidebar() {
         {/* Logo/Brand */}
         <div className="p-6 border-b border-slate-700">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Hijabi Inoor
+            HIJABI NOUR
           </h1>
           <p className="text-sm text-slate-400 mt-1">Panneau d'administration</p>
         </div>

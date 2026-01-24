@@ -96,3 +96,5 @@ Si Supabase n'est pas disponible ou en cas d'erreur, le code utilise automatique
 
 
 
+
+

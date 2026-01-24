@@ -177,7 +177,7 @@ export function AdminOrderDetail() {
 
       {/* Print Header */}
       <div className="hidden print:block text-center mb-8">
-        <h1 className="text-2xl font-bold">Hijabi Inoor</h1>
+        <h1 className="text-2xl font-bold">HIJABI NOUR</h1>
         <p className="text-lg">Commande {order.reference}</p>
         <p className="text-sm text-gray-500">
           {order.created_at && format(new Date(order.created_at), 'PPP', { locale: fr })}

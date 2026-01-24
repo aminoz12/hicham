@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Hijabi Inoor - Modest Fashion',
-        short_name: 'Hijabi Inoor',
+        name: 'HIJABI NOUR - Modest Fashion',
+        short_name: 'HIJABI NOUR',
         description: 'Premium abayas and hijabs for the modern Muslim woman',
         theme_color: '#8B5CF6',
         background_color: '#ffffff',

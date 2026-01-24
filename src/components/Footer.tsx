@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                   <LazyLoadImage 
                     src="/logo.png" 
-                    alt="Hijabi Inoor Logo" 
+                    alt="HIJABI NOUR Logo" 
                     effect="blur"
                     placeholderSrc="/logo.png"
                     width="100%"
@@ -79,7 +79,7 @@ const Footer: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold group-hover:text-primary-400 transition-colors">
-                    Hijabi Inoor
+                    HIJABI NOUR
                   </h3>
                   <p className="text-sm text-gray-400">Premium Modest Fashion</p>
                 </div>
@@ -226,7 +226,7 @@ const Footer: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="flex items-center space-x-2 text-gray-400"
             >
-              <span>© {currentYear} Hijabi Inoor. Tous droits réservés.</span>
+              <span>© {currentYear} HIJABI NOUR. Tous droits réservés.</span>
               <span className="hidden md:inline">•</span>
               <span className="hidden md:inline">Fait avec</span>
               <Heart className="h-4 w-4 text-red-500 fill-current" />

@@ -7,7 +7,7 @@ export const testimonials: Testimonial[] = [
     location: 'Paris, France',
     avatar: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face',
     rating: 5,
-    comment: 'This dress is so cute and versatile. It can be dressed up or worn for day to day casual and its super comfy. It\'s classic and timeless and will never go out of style, as always for Hijabi Inoor.',
+    comment: 'This dress is so cute and versatile. It can be dressed up or worn for day to day casual and its super comfy. It\'s classic and timeless and will never go out of style, as always for HIJABI NOUR.',
     product: 'Elegant Modal Hijab',
     verified: true
   },
@@ -27,7 +27,7 @@ export const testimonials: Testimonial[] = [
     location: 'Marseille, France',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
     rating: 5,
-    comment: 'Elegant and chic. The hijabs are well designed and the fabric adds a touch of elegance. You feel special wearing Hijabi Inoor outfits. Thank you for the fast delivery and special notes too 🥰',
+    comment: 'Elegant and chic. The hijabs are well designed and the fabric adds a touch of elegance. You feel special wearing HIJABI NOUR outfits. Thank you for the fast delivery and special notes too 🥰',
     product: 'Chiffon Scarf Set',
     verified: true
   }

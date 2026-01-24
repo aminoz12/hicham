@@ -28,7 +28,7 @@ export function AdminSettings() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="store-name">Nom de la boutique</Label>
-            <Input id="store-name" defaultValue="Hijabi Inoor" />
+            <Input id="store-name" defaultValue="HIJABI NOUR" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="store-email">Email de contact</Label>

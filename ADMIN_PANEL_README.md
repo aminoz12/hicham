@@ -2,7 +2,7 @@
 
 ## Overview
 
-A complete admin panel has been created for managing the Hijabi Inoor e-commerce website. The admin panel includes:
+A complete admin panel has been created for managing the HIJABI NOUR e-commerce website. The admin panel includes:
 
 - **Authentication System** - Secure login with Supabase
 - **Dashboard** - Overview statistics and metrics

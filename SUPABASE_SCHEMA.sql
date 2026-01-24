@@ -1,5 +1,5 @@
 -- ============================================
--- Hijabi Inoor E-commerce - Supabase Schema
+-- HIJABI NOUR E-commerce - Supabase Schema
 -- ============================================
 
 -- Enable UUID extension

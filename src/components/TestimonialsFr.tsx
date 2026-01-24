@@ -16,7 +16,7 @@ const TestimonialsFr: React.FC = () => {
       name: 'Layla',
       role: 'Élégant Hijab en Mousseline',
       location: 'Paris, France',
-      content: 'Cette robe est si mignonne et polyvalente. Elle peut être habillée ou portée pour un look décontracté au quotidien, et elle est super confortable. C\'est un classique intemporel qui ne se démode jamais, comme toujours chez Hijabi Inoor.',
+      content: 'Cette robe est si mignonne et polyvalente. Elle peut être habillée ou portée pour un look décontracté au quotidien, et elle est super confortable. C\'est un classique intemporel qui ne se démode jamais, comme toujours chez HIJABI NOUR.',
       rating: 5,
       image: '/testimonials/layla.jpg'
     },
@@ -34,7 +34,7 @@ const TestimonialsFr: React.FC = () => {
       name: 'Ines J.',
       role: 'Ensemble de Foulards en Chiffon',
       location: 'Marseille, France',
-      content: 'Élégant et chic. Les hijabs sont bien conçus et le tissu ajoute une touche d\'élégance. On se sent spéciale en portant les tenues Hijabi Inoor. Merci pour la livraison rapide et les petites attentions aussi 🥰',
+      content: 'Élégant et chic. Les hijabs sont bien conçus et le tissu ajoute une touche d\'élégance. On se sent spéciale en portant les tenues HIJABI NOUR. Merci pour la livraison rapide et les petites attentions aussi 🥰',
       rating: 5,
       image: '/testimonials/ines.jpg'
     }

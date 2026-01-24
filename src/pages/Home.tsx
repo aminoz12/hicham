@@ -18,10 +18,10 @@ const Home: React.FC = () => {
   return (
     <div className="relative bg-white">
       <Helmet>
-        <title>Hijabi Inoor - Premium Modest Fashion | Elegant Abayas & Hijabs</title>
+        <title>HIJABI NOUR - Premium Modest Fashion | Elegant Abayas & Hijabs</title>
         <meta name="description" content="Discover our curated collection of premium abayas, hijabs, and modest fashion. Elegant designs, exceptional quality, and perfect for the modern Muslim woman." />
         <meta name="keywords" content="hijab, abaya, modest fashion, muslim clothing, islamic wear, hijabi, elegant abayas, premium hijabs" />
-        <meta property="og:title" content="Hijabi Inoor - Premium Modest Fashion" />
+        <meta property="og:title" content="HIJABI NOUR - Premium Modest Fashion" />
         <meta property="og:description" content="Discover our curated collection of premium abayas, hijabs, and modest fashion. Elegant designs, exceptional quality." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://hijabiinoor.com" />

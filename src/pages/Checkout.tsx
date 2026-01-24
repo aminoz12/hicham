@@ -260,7 +260,7 @@ const Checkout: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Helmet>
-          <title>Commande confirmée - Hijabi Inoor</title>
+          <title>Commande confirmée - HIJABI NOUR</title>
         </Helmet>
         <div className="max-w-2xl mx-auto px-4 py-16 text-center">
           <motion.div
@@ -302,7 +302,7 @@ const Checkout: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Helmet>
-        <title>Checkout - Hijabi Inoor</title>
+        <title>Checkout - HIJABI NOUR</title>
         <meta name="description" content="Finalisez votre commande en quelques étapes simples" />
       </Helmet>
 

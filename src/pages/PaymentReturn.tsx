@@ -158,7 +158,7 @@ const PaymentReturn: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <Helmet>
-        <title>{getTitle()} - Hijabi Inoor</title>
+        <title>{getTitle()} - HIJABI NOUR</title>
       </Helmet>
 
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
@@ -227,5 +227,7 @@ const PaymentReturn: React.FC = () => {
 };
 
 export default PaymentReturn;
+
+
 
 

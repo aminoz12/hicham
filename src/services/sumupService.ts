@@ -192,7 +192,7 @@ export function openWhatsAppOrder(params: {
 }): void {
   const phoneNumber = '33766043375'; // WhatsApp business number
   
-  const message = `🛒 *Nouvelle Commande - Hijabi Inoor*
+  const message = `🛒 *Nouvelle Commande - HIJABI NOUR*
 
 📋 *Référence:* ${params.reference}
 

@@ -10,7 +10,7 @@ const CheckoutSuccess: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <Helmet>
-        <title>Order Confirmed - Hijabi Inoor</title>
+        <title>Order Confirmed - HIJABI NOUR</title>
         <meta name="description" content="Your order has been successfully placed" />
       </Helmet>
 
@@ -50,6 +50,8 @@ const CheckoutSuccess: React.FC = () => {
 };
 
 export default CheckoutSuccess;
+
+
 
 
 

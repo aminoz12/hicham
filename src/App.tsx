@@ -71,15 +71,15 @@ function App() {
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
-        <title>Hijabi Inoor - Premium Modest Fashion</title>
+        <title>HIJABI NOUR - Premium Modest Fashion</title>
         <meta name="description" content="Discover elegant abayas and hijabs designed for the modern Muslim woman. Premium quality, beautiful designs, and exceptional comfort." />
         <meta name="keywords" content="hijab, abaya, modest fashion, muslim clothing, islamic wear, hijabi, modest dress, premium hijabs" />
-        <meta property="og:title" content="Hijabi Inoor - Premium Modest Fashion" />
+        <meta property="og:title" content="HIJABI NOUR - Premium Modest Fashion" />
         <meta property="og:description" content="Discover elegant abayas and hijabs designed for the modern Muslim woman. Premium quality, beautiful designs." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://hijabiinoor.com" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Hijabi Inoor - Premium Modest Fashion" />
+        <meta name="twitter:title" content="HIJABI NOUR - Premium Modest Fashion" />
         <meta name="twitter:description" content="Discover elegant abayas and hijabs designed for the modern Muslim woman. Premium quality, beautiful designs." />
       </Helmet>
 

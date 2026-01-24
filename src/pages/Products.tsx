@@ -121,7 +121,7 @@ const Products: React.FC = () => {
     <div className="min-h-screen bg-white">
       <Helmet>
         <title>
-          {category ? `${category.charAt(0).toUpperCase() + category.slice(1)} - Hijabi Inoor` : 'All Products - Hijabi Inoor'}
+          {category ? `${category.charAt(0).toUpperCase() + category.slice(1)} - HIJABI NOUR` : 'All Products - HIJABI NOUR'}
         </title>
         <meta name="description" content={`Browse our collection of ${category || 'premium modest fashion'} products. High quality, elegant designs for the modern Muslim woman.`} />
       </Helmet>
