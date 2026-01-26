@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Star, Heart, Share2, Truck, RotateCcw, MessageCircle, Plus, Minus, ShoppingCart } from 'lucide-react';
-import { fetchProductById } from '@/services/productService';
+import { fetchProductById, fetchProductsByCategory } from '@/services/productService';
 import { formatPrice, calculateDiscount } from '@/utils';
 import { useCartStore } from '@/store/cartStore';
 import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { Product } from '@/types';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,7 @@ const ProductDetail: React.FC = () => {
 
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -44,6 +46,22 @@ const ProductDetail: React.FC = () => {
     if (product) {
       setSelectedColor(product.colors[0]);
       setSelectedSize(product.sizes[0]);
+      
+      // Load related products from the same category
+      const loadRelatedProducts = async () => {
+        try {
+          const categoryProducts = await fetchProductsByCategory(product.category as any);
+          // Filter out current product and randomly select 5
+          const filtered = categoryProducts.filter(p => p.id !== product.id);
+          const shuffled = filtered.sort(() => 0.5 - Math.random());
+          setRelatedProducts(shuffled.slice(0, 5));
+        } catch (error) {
+          console.error('Error loading related products:', error);
+          setRelatedProducts([]);
+        }
+      };
+      
+      loadRelatedProducts();
     }
     // Scroll to top when product loads
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -381,6 +399,83 @@ const ProductDetail: React.FC = () => {
             </div>
           </motion.div>
         </div>
+
+        {/* You May Also Like Section */}
+        {relatedProducts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-16 pt-16 border-t border-gray-200"
+          >
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">Vous pourriez aussi aimer</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8">
+              {relatedProducts.map((relatedProduct, index) => (
+                <motion.div
+                  key={relatedProduct.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  className="group"
+                >
+                  <Link 
+                    to={`/product/${relatedProduct.id}`} 
+                    className="block"
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+                  >
+                    {/* Image Container */}
+                    <div className="relative overflow-hidden mb-3 bg-gray-50">
+                      <LazyLoadImage
+                        src={relatedProduct.image}
+                        alt={relatedProduct.name}
+                        effect="blur"
+                        placeholderSrc="/logo.png"
+                        width="100%"
+                        height="100%"
+                        className="w-full h-[250px] sm:h-[300px] object-cover group-hover:opacity-95 transition-opacity duration-300"
+                      />
+                      {relatedProduct.images && relatedProduct.images[1] && (
+                        <LazyLoadImage
+                          src={relatedProduct.images[1]}
+                          alt={relatedProduct.name}
+                          effect="blur"
+                          placeholderSrc="/logo.png"
+                          width="100%"
+                          height="100%"
+                          className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        />
+                      )}
+                      
+                      {/* Sale Badge */}
+                      {relatedProduct.isOnSale && relatedProduct.originalPrice && (
+                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                          -{calculateDiscount(relatedProduct.originalPrice, relatedProduct.price)}%
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Product Info */}
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900 mb-1 group-hover:opacity-70 transition-opacity line-clamp-2">
+                        {relatedProduct.name}
+                      </h3>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {formatPrice(relatedProduct.price)}
+                        </span>
+                        {relatedProduct.originalPrice && (
+                          <span className="text-xs text-gray-500 line-through">
+                            {formatPrice(relatedProduct.originalPrice)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

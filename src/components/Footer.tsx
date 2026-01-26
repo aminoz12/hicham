@@ -36,19 +36,9 @@ const Footer: React.FC = () => {
   ];
 
   const customerService = [
-    { label: 'Nous contacter', href: '/contact' },
-    { label: 'FAQ', href: '/faq' },
-    { label: 'Informations de livraison', href: '/shipping' },
-    { label: 'Retours et échanges', href: '/returns' },
-    { label: 'Suivre votre commande', href: '/track' },
-    { label: 'Tableau des tailles', href: '/size-chart' }
-  ];
-
-  const legal = [
-    { label: 'Politique de confidentialité', href: '/privacy' },
-    { label: 'Conditions d\'utilisation', href: '/terms' },
-    { label: 'Politique des cookies', href: '/cookies' },
-    { label: 'Accessibilité', href: '/accessibility' }
+    { label: 'Nous contacter', href: 'https://wa.me/33766043375', isExternal: true },
+    { label: 'FAQ', href: '/#faq' },
+    { label: 'Informations de livraison', href: '/shipping' }
   ];
 
   return (
@@ -151,12 +141,23 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               {customerService.map((link) => (
                 <li key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="text-gray-300 hover:text-primary-400 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
+                  {link.isExternal ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-300 hover:text-primary-400 transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      to={link.href}
+                      className="text-gray-300 hover:text-primary-400 transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -233,27 +234,6 @@ const Footer: React.FC = () => {
               <span className="hidden md:inline">en France</span>
             </motion.div>
 
-            {/* Legal Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="flex flex-wrap items-center space-x-6 text-sm"
-            >
-              {legal.map((link, index) => (
-                <React.Fragment key={link.label}>
-                  <Link
-                    to={link.href}
-                    className="text-gray-400 hover:text-primary-400 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                  {index < legal.length - 1 && (
-                    <span className="text-gray-600">•</span>
-                  )}
-                </React.Fragment>
-              ))}
-            </motion.div>
 
             {/* Back to Top */}
             <motion.button
