@@ -6,7 +6,6 @@ import { Star, Heart, Share2, Truck, RotateCcw, MessageCircle, Plus, Minus, Shop
 import { fetchProductById, fetchProductsByCategory } from '@/services/productService';
 import { formatPrice, calculateDiscount } from '@/utils';
 import { useCartStore } from '@/store/cartStore';
-import { useUIStore } from '@/store/uiStore';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -22,7 +21,6 @@ const ProductDetail: React.FC = () => {
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   const { addItem, updateQuantity } = useCartStore();
-  const { openProductModal } = useUIStore();
   const { t: tHome } = useTranslation('home');
   const { t } = useTranslation('products');
 
