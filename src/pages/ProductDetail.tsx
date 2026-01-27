@@ -149,8 +149,8 @@ const ProductDetail: React.FC = () => {
         <meta property="og:image" content={product.images[0]} />
       </Helmet>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-2 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20">
           
           {/* Images */}
           <motion.div
@@ -160,7 +160,7 @@ const ProductDetail: React.FC = () => {
             className="space-y-4"
           >
             {/* Main Image */}
-            <div className="aspect-square overflow-hidden rounded-2xl bg-gray-100">
+            <div className="aspect-square overflow-hidden rounded-xl bg-gray-50 shadow-sm">
               <LazyLoadImage
                 src={product.images[selectedImage]}
                 alt={product.name}
@@ -174,15 +174,15 @@ const ProductDetail: React.FC = () => {
 
             {/* Thumbnail Images */}
             {product.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-4 gap-3">
                 {product.images.map((image: string, index: number) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square overflow-hidden rounded-lg ${
+                    className={`aspect-square overflow-hidden rounded-md transition-all duration-200 ${
                       selectedImage === index
-                        ? 'ring-2 ring-primary-500'
-                        : 'hover:ring-2 hover:ring-gray-300'
+                        ? 'ring-2 ring-gray-900 shadow-sm'
+                        : 'hover:ring-2 hover:ring-gray-300 opacity-75 hover:opacity-100'
                     }`}
                   >
                     <LazyLoadImage
@@ -205,18 +205,18 @@ const ProductDetail: React.FC = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="space-y-6"
+            className="space-y-8"
           >
             {/* Breadcrumb */}
-            <nav className="text-sm text-gray-500">
-              <span>{t('home')}</span> / <span>{t('products')}</span> / <span className="text-gray-900">{product.category}</span>
+            <nav className="text-sm text-gray-500 font-medium mb-2">
+              <span className="hover:text-gray-700 transition-colors">{t('home')}</span> / <span className="hover:text-gray-700 transition-colors">{t('products')}</span> / <span className="text-gray-900 font-semibold">{product.category}</span>
             </nav>
 
             {/* Title */}
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-1">
+            <div className="space-y-3">
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 leading-tight tracking-tight">{product.name}</h1>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
@@ -227,62 +227,43 @@ const ProductDetail: React.FC = () => {
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-gray-600">({product.reviewCount} {t('reviews')})</span>
+                  <span className="ml-2 text-sm text-gray-600 font-medium">({product.reviewCount} {t('reviews')})</span>
                 </div>
               </div>
             </div>
 
             {/* Price */}
-            <div className="flex items-center space-x-4">
-              <span className="text-3xl font-bold text-gray-900">
+            <div className="flex items-baseline gap-4">
+              <span className="text-4xl font-bold text-gray-900 font-serif">
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
                 <>
-                  <span className="text-xl text-gray-500 line-through">
+                  <span className="text-xl text-gray-400 line-through font-medium">
                     {formatPrice(product.originalPrice)}
                   </span>
-                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-sm font-semibold">
+                  <span className="bg-red-50 text-red-700 px-3 py-1 rounded-md text-sm font-semibold border border-red-200">
                     -{calculateDiscount(product.originalPrice, product.price)}%
                   </span>
                 </>
               )}
             </div>
 
-            {/* Special pricing note for hijabs */}
-            {product.category === 'hijabs' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 text-sm font-bold">!</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-sm font-semibold text-blue-900 mb-1">{t('specialPricing')}</h4>
-                    <p className="text-sm text-blue-700">
-                      {t('buy1For')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Description */}
-            <p className="text-gray-600 leading-relaxed">{product.description}</p>
+            <p className="text-base text-gray-700 leading-relaxed font-sans">{product.description}</p>
 
             {/* Colors */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('color')}: {selectedColor}</h3>
-              <div className="flex space-x-3">
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold text-gray-900 uppercase tracking-wide text-sm">{t('color')}: <span className="normal-case font-medium text-gray-700">{selectedColor}</span></h3>
+              <div className="flex flex-wrap gap-2">
                 {product.colors.map((color: string) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-2 rounded-lg border-2 transition-colors ${
+                    className={`px-5 py-2.5 rounded-md border-2 transition-all duration-200 font-medium text-sm ${
                       selectedColor === color
-                        ? 'border-primary-500 bg-primary-50 text-primary-700'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-gray-900 bg-gray-900 text-white shadow-sm'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
                     }`}
                   >
                     {color}
@@ -292,17 +273,17 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Sizes */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('size')}: {selectedSize}</h3>
-              <div className="flex space-x-3">
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold text-gray-900 uppercase tracking-wide text-sm">{t('size')}: <span className="normal-case font-medium text-gray-700">{selectedSize}</span></h3>
+              <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size: string) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center font-medium transition-colors ${
+                    className={`w-14 h-14 rounded-md border-2 flex items-center justify-center font-semibold text-sm transition-all duration-200 ${
                       selectedSize === size
-                        ? 'border-primary-500 bg-primary-50 text-primary-700'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-gray-900 bg-gray-900 text-white shadow-sm'
+                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
                     }`}
                   >
                     {size}
@@ -312,85 +293,82 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Quantity */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('quantity')}</h3>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center border border-gray-300 rounded-lg">
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold text-gray-900 uppercase tracking-wide text-sm">{t('quantity')}</h3>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center border-2 border-gray-300 rounded-md overflow-hidden">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-3 hover:bg-gray-100 transition-colors"
+                    aria-label="Decrease quantity"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="px-4 py-2 font-medium">{quantity}</span>
+                  <span className="px-6 py-3 font-semibold text-gray-900 min-w-[3rem] text-center">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-3 hover:bg-gray-100 transition-colors"
+                    aria-label="Increase quantity"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm text-gray-600 font-medium">
                   {product.inStock ? t('inStock') : t('outOfStock')}
                 </span>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-4">
-              <div className="flex space-x-4">
+            <div className="space-y-3 pt-2">
+              <div className="flex gap-3">
                 <button
                   onClick={handleAddToCart}
                   disabled={!product.inStock}
-                  className="flex-1 btn-primary flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-base py-4"
                 >
                   <ShoppingCart className="h-5 w-5" />
                   <span>{t('addToCart')}</span>
                 </button>
                 <button
                   onClick={handleWishlist}
-                  className={`p-4 rounded-xl border-2 transition-colors ${
+                  className={`p-4 rounded-md border-2 transition-all duration-200 ${
                     isWishlisted
                       ? 'border-red-500 bg-red-50 text-red-600'
-                      : 'border-gray-300 hover:border-gray-400'
+                      : 'border-gray-300 hover:border-gray-400 bg-white'
                   }`}
+                  aria-label="Add to wishlist"
                 >
                   <Heart className={`h-5 w-5 ${isWishlisted ? 'fill-current' : ''}`} />
                 </button>
                 <button
                   onClick={handleShare}
-                  className="p-4 rounded-xl border-2 border-gray-300 hover:border-gray-400 transition-colors"
+                  className="p-4 rounded-md border-2 border-gray-300 hover:border-gray-400 transition-all duration-200 bg-white"
+                  aria-label="Share product"
                 >
                   <Share2 className="h-5 w-5" />
                 </button>
               </div>
-
-              <button
-                onClick={() => openProductModal(product)}
-                className="w-full btn-secondary"
-              >
-                {t('quickView')}
-              </button>
             </div>
 
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-200">
               {features.map((feature, index) => (
-                <div key={index} className="flex items-center space-x-3">
-                  <feature.icon className="h-5 w-5 text-primary-600" />
-                  <span className="text-sm text-gray-600">{feature.text}</span>
+                <div key={index} className="flex items-start gap-3">
+                  <feature.icon className="h-5 w-5 text-gray-700 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm text-gray-600 leading-relaxed">{feature.text}</span>
                 </div>
               ))}
             </div>
 
             {/* Tags */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('tags')}</h3>
+            <div className="pt-4 border-t border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wide">{t('tags')}</h3>
               <div className="flex flex-wrap gap-2">
                 {product.tags.map((tag: string) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                    className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 transition-colors"
                   >
                     {tag}
                   </span>
@@ -408,7 +386,7 @@ const ProductDetail: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-16 pt-16 border-t border-gray-200"
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-8">Vous pourriez aussi aimer</h2>
+            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-10">Vous pourriez aussi aimer</h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8">
               {relatedProducts.map((relatedProduct, index) => (
                 <motion.div
