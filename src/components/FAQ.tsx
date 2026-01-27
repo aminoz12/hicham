@@ -77,7 +77,7 @@ const FAQ: React.FC = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-6">
             <HelpCircle className="w-8 h-8 text-primary-600" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-luxury text-gray-900 mb-4">
             {isFrench ? 'Questions Fréquentes' : 'Frequently Asked Questions'}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">

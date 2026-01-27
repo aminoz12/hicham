@@ -44,7 +44,7 @@ const FeaturedProducts: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
-          <h2 className="text-2xl sm:text-3xl font-serif text-[#0B0B0D] mb-2 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-luxury text-[#0B0B0D] mb-2 tracking-tight">
             {t('featured.curatedSelection')}
           </h2>
           <Link 
@@ -105,7 +105,7 @@ const FeaturedProducts: React.FC = () => {
                   
                   {/* Minimal Badge - Only on Sale */}
                   {product.isOnSale && product.originalPrice && (
-                    <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-medium">
+                    <div className="absolute top-4 left-4 bg-black text-white px-3 py-1 text-xs font-medium font-luxury">
                       -{calculateDiscount(product.originalPrice, product.price)}%
                     </div>
                   )}
@@ -120,11 +120,11 @@ const FeaturedProducts: React.FC = () => {
                   
                   {/* Price */}
                   <div className="flex items-center space-x-2">
-                    <span className="text-base text-[#0B0B0D]">
+                    <span className="text-base text-[#0B0B0D] font-luxury font-semibold">
                       {formatPrice(product.price)}
                     </span>
                     {product.originalPrice && (
-                      <span className="text-sm text-gray-500 line-through">
+                      <span className="text-sm text-gray-500 line-through font-luxury">
                         {formatPrice(product.originalPrice)}
                       </span>
                     )}

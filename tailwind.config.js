@@ -50,6 +50,7 @@ export default {
         'serif': ['Playfair Display', 'Georgia', 'Times New Roman', 'serif'],
         'display': ['Playfair Display', 'Georgia', 'serif'],
         'editorial': ['Playfair Display', 'Georgia', 'serif'],
+        'luxury': ['Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1.5' }],

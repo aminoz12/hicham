@@ -212,7 +212,7 @@ const ProductDetail: React.FC = () => {
 
             {/* Title */}
             <div className="space-y-3">
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 leading-tight tracking-tight">{product.name}</h1>
+              <h1 className="text-4xl md:text-5xl font-luxury font-bold text-gray-900 leading-tight tracking-tight">{product.name}</h1>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -225,22 +225,22 @@ const ProductDetail: React.FC = () => {
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-sm text-gray-600 font-medium">({product.reviewCount} {t('reviews')})</span>
+                  <span className="ml-2 text-sm text-gray-600 font-medium">(<span className="font-luxury font-semibold">{product.reviewCount}</span> {t('reviews')})</span>
                 </div>
               </div>
             </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-4">
-              <span className="text-4xl font-bold text-gray-900 font-serif">
+              <span className="text-4xl font-bold text-gray-900 font-luxury">
                 {formatPrice(product.price)}
               </span>
               {product.originalPrice && (
                 <>
-                  <span className="text-xl text-gray-400 line-through font-medium">
+                  <span className="text-xl text-gray-400 line-through font-medium font-luxury">
                     {formatPrice(product.originalPrice)}
                   </span>
-                  <span className="bg-red-50 text-red-700 px-3 py-1 rounded-md text-sm font-semibold border border-red-200">
+                  <span className="bg-red-50 text-red-700 px-3 py-1 rounded-md text-sm font-semibold border border-red-200 font-luxury">
                     -{calculateDiscount(product.originalPrice, product.price)}%
                   </span>
                 </>
@@ -302,7 +302,7 @@ const ProductDetail: React.FC = () => {
                   >
                     <Minus className="h-4 w-4" />
                   </button>
-                  <span className="px-6 py-3 font-semibold text-gray-900 min-w-[3rem] text-center">{quantity}</span>
+                  <span className="px-6 py-3 font-semibold text-gray-900 min-w-[3rem] text-center font-luxury text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
                     className="p-3 hover:bg-gray-100 transition-colors"
@@ -384,7 +384,7 @@ const ProductDetail: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-16 pt-16 border-t border-gray-200"
           >
-            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-10">Vous pourriez aussi aimer</h2>
+            <h2 className="text-3xl font-luxury font-bold text-gray-900 mb-10">Vous pourriez aussi aimer</h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8">
               {relatedProducts.map((relatedProduct, index) => (
                 <motion.div
@@ -424,7 +424,7 @@ const ProductDetail: React.FC = () => {
                       
                       {/* Sale Badge */}
                       {relatedProduct.isOnSale && relatedProduct.originalPrice && (
-                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold">
+                        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold font-luxury">
                           -{calculateDiscount(relatedProduct.originalPrice, relatedProduct.price)}%
                         </div>
                       )}
@@ -436,11 +436,11 @@ const ProductDetail: React.FC = () => {
                         {relatedProduct.name}
                       </h3>
                       <div className="flex items-center space-x-2">
-                        <span className="text-sm font-semibold text-gray-900">
+                        <span className="text-sm font-semibold text-gray-900 font-luxury">
                           {formatPrice(relatedProduct.price)}
                         </span>
                         {relatedProduct.originalPrice && (
-                          <span className="text-xs text-gray-500 line-through">
+                          <span className="text-xs text-gray-500 line-through font-luxury">
                             {formatPrice(relatedProduct.originalPrice)}
                           </span>
                         )}

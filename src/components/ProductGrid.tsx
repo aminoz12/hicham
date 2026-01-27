@@ -97,11 +97,11 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, viewMode: _viewMode
               
               {/* Price */}
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-[#0B0B0D]">
+                <span className="text-sm text-[#0B0B0D] font-luxury font-semibold">
                   {formatPrice(product.price)}
                 </span>
                 {product.originalPrice && (
-                  <span className="text-sm text-gray-500 line-through">
+                  <span className="text-sm text-gray-500 line-through font-luxury">
                     {formatPrice(product.originalPrice)}
                   </span>
                 )}

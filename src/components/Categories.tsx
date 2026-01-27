@@ -85,7 +85,7 @@ const Categories: React.FC = () => {
           transition={{ duration: 0.6 }}
           className="mb-12"
         >
-          <h2 className="text-2xl sm:text-3xl font-serif text-[#0B0B0D] mb-2 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-luxury text-[#0B0B0D] mb-2 tracking-tight">
             {t('categories.shopByCategory')}
           </h2>
         </motion.div>

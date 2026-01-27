@@ -70,9 +70,8 @@ const Hero: React.FC = () => {
         className="absolute bottom-20 left-8 lg:left-16 z-30 text-white"
       >
         <motion.h1 
-          className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light mb-8 tracking-wide leading-tight"
+          className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light mb-8 tracking-wide leading-tight font-luxury"
           style={{
-            fontFamily: "'Playfair Display', serif",
             letterSpacing: '0.05em',
             textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
           }}
