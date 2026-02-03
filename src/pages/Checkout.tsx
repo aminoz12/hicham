@@ -75,7 +75,7 @@ const Checkout: React.FC = () => {
   const subtotal = cartTotal;
 
   // Calculate shipping cost (free over 69€)
-  const shippingCost = subtotal >= 69 ? 0 : 5.90;
+  const shippingCost = subtotal >= 69 ? 0 : 4.99;
   
   // Calculate final total
   const total = subtotal + shippingCost;

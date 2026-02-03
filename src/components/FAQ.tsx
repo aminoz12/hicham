@@ -19,8 +19,8 @@ const faqData: FAQItem[] = [
   {
     question: "La livraison est-elle gratuite ?",
     questionEn: "Is shipping free?",
-    answer: "Oui ! La livraison est gratuite pour toutes les commandes de 69€ ou plus. Pour les commandes inférieures à 69€, des frais de livraison de 5,90€ s'appliquent.",
-    answerEn: "Yes! Shipping is free for all orders of €69 or more. For orders under €69, a shipping fee of €5.90 applies."
+    answer: "Oui ! La livraison est gratuite pour toutes les commandes de 69€ ou plus. Pour les commandes inférieures à 69€, des frais de livraison de 4,99€ s'appliquent.",
+    answerEn: "Yes! Shipping is free for all orders of €69 or more. For orders under €69, a shipping fee of €4.99 applies."
   },
   {
     question: "Puis-je retourner ou échanger un article ?",

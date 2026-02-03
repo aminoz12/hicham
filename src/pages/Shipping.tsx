@@ -39,7 +39,7 @@ const Shipping: React.FC = () => {
     {
       zone: 'France Métropolitaine',
       price: 'Gratuite dès 69€',
-      priceUnder: '5,90€',
+      priceUnder: '4,99€',
       delivery: '3-5 jours ouvrables'
     },
     {
