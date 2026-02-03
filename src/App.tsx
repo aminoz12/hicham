@@ -19,6 +19,7 @@ import SearchModal from '@/components/SearchModal';
 import NewsletterModal from '@/components/NewsletterModal';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ScrollToTop from '@/components/ScrollToTop';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import { Toaster } from 'react-hot-toast';
 
 // Admin Pages
@@ -300,6 +301,9 @@ function App() {
           },
         }}
       />
+
+      {/* WhatsApp Floating Button - Site-wide */}
+      <WhatsAppButton />
     </div>
   );
 }

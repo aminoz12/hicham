@@ -595,15 +595,32 @@ const Checkout: React.FC = () => {
 
               {/* Free Hijabs Promotion */}
               {freeHijabs > 0 && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-green-800">
-                      🎁 Promotion: {freeHijabs} hijab{freeHijabs > 1 ? 's' : ''} gratuit{freeHijabs > 1 ? 's' : ''} !
-                    </span>
+                <div className="relative overflow-hidden bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border-2 border-green-300 rounded-xl p-4 mb-4 shadow-sm">
+                  {/* Decorative background pattern */}
+                  <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0" style={{
+                      backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px)'
+                    }}></div>
                   </div>
-                  <p className="text-xs text-green-700">
-                    Vous recevrez {totalHijabs} hijab{totalHijabs > 1 ? 's' : ''} (dont {freeHijabs} gratuit{freeHijabs > 1 ? 's' : ''})
-                  </p>
+                  
+                  <div className="relative flex items-start gap-3">
+                    {/* Gift Icon */}
+                    <div className="flex-shrink-0 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center shadow-md">
+                      <span className="text-xl">🎁</span>
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base font-bold text-green-900 font-luxury">
+                          Promotion: {freeHijabs} hijab{freeHijabs > 1 ? 's' : ''} gratuit{freeHijabs > 1 ? 's' : ''} !
+                        </span>
+                      </div>
+                      <p className="text-sm text-green-800 font-medium leading-relaxed">
+                        Vous recevrez <span className="font-bold text-green-900">{totalHijabs} hijab{totalHijabs > 1 ? 's' : ''}</span> (dont <span className="font-bold text-green-900">{freeHijabs} gratuit{freeHijabs > 1 ? 's' : ''}</span>)
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
 

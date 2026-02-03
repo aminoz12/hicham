@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MessageCircle } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -113,17 +112,6 @@ const Hero: React.FC = () => {
         </Link>
         </motion.div>
       </motion.div>
-
-      {/* Chat/Support Icon - Bottom Right */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0 }}
-        animate={inView ? { opacity: 1, scale: 1 } : {}}
-        transition={{ duration: 0.6, delay: 0.6 }}
-        className="absolute bottom-8 right-8 z-30 w-12 h-12 bg-black rounded-full flex items-center justify-center shadow-lg hover:bg-gray-800 transition-colors"
-        aria-label="Chat support"
-      >
-        <MessageCircle className="h-6 w-6 text-white" />
-      </motion.button>
     </section>
   );
 };
