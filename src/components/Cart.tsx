@@ -16,10 +16,15 @@ const Cart: React.FC = () => {
     itemCount, 
     updateQuantity, 
     removeItem, 
-    clearCart 
+    clearCart,
+    getTotalHijabs,
+    getFreeHijabs
   } = useCartStore();
   
   const { toggleCart } = useUIStore();
+  
+  const totalHijabs = getTotalHijabs();
+  const freeHijabs = getFreeHijabs();
 
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -191,6 +196,20 @@ const Cart: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="border-t border-gray-200 p-6 space-y-4"
           >
+            {/* Free Hijabs Promotion */}
+            {freeHijabs > 0 && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-green-800">
+                    🎁 Promotion: {freeHijabs} hijab{freeHijabs > 1 ? 's' : ''} gratuit{freeHijabs > 1 ? 's' : ''} !
+                  </span>
+                </div>
+                <p className="text-xs text-green-700 mt-1">
+                  Vous recevrez {totalHijabs} hijab{totalHijabs > 1 ? 's' : ''} (dont {freeHijabs} gratuit{freeHijabs > 1 ? 's' : ''})
+                </p>
+              </div>
+            )}
+            
             {/* Total */}
             <div className="flex items-center justify-between text-lg font-semibold">
               <span className="text-gray-900">Total:</span>

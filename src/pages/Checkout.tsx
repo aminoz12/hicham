@@ -52,7 +52,7 @@ interface ShippingInfo {
 
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
-  const { items, clearCart } = useCartStore();
+  const { items, clearCart, total: cartTotal, getTotalHijabs, getFreeHijabs } = useCartStore();
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'pending' | 'processing' | 'success' | 'failed'>('pending');
@@ -71,27 +71,17 @@ const Checkout: React.FC = () => {
     address2: '',
   });
 
-  // Calculate subtotal (with special hijab pricing for 13€ hijabs only)
-  const subtotal = items.reduce((sum, item) => {
-    // Special pricing ONLY for hijabs priced at 13€: 2 for 25€
-    if (item.product.category === 'hijabs' && item.product.price === 13) {
-      if (item.quantity >= 2) {
-        const pairs = Math.floor(item.quantity / 2);
-        const remaining = item.quantity % 2;
-        return sum + (pairs * 25) + (remaining * 13);
-      } else {
-        return sum + (item.quantity * 13);
-      }
-    } else {
-      return sum + (item.product.price * item.quantity);
-    }
-  }, 0);
+  // Use cartStore's total which includes the "3 acheté = 1 offert" promotion
+  const subtotal = cartTotal;
 
   // Calculate shipping cost (free over 69€)
   const shippingCost = subtotal >= 69 ? 0 : 5.90;
   
   // Calculate final total
   const total = subtotal + shippingCost;
+  
+  const totalHijabs = getTotalHijabs();
+  const freeHijabs = getFreeHijabs();
 
   useEffect(() => {
     if (items.length === 0 && paymentStatus !== 'success') {
@@ -602,6 +592,20 @@ const Checkout: React.FC = () => {
                   </div>
                 ))}
               </div>
+
+              {/* Free Hijabs Promotion */}
+              {freeHijabs > 0 && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-green-800">
+                      🎁 Promotion: {freeHijabs} hijab{freeHijabs > 1 ? 's' : ''} gratuit{freeHijabs > 1 ? 's' : ''} !
+                    </span>
+                  </div>
+                  <p className="text-xs text-green-700">
+                    Vous recevrez {totalHijabs} hijab{totalHijabs > 1 ? 's' : ''} (dont {freeHijabs} gratuit{freeHijabs > 1 ? 's' : ''})
+                  </p>
+                </div>
+              )}
 
               {/* Totals */}
               <div className="border-t border-gray-200 pt-4 space-y-3">

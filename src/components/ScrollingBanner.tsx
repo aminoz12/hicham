@@ -3,6 +3,7 @@ import React from 'react';
 const ScrollingBanner: React.FC = () => {
   const messages = [
     "LIVRAISON GRATUITE DEPUIS 69 EURO D'ACHAT",
+    "3 ACHETÉ = 1 OFFERT 🎁",
   ];
 
   // Duplicate messages multiple times for seamless infinite scroll

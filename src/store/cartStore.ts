@@ -10,6 +10,8 @@ interface CartStore extends Cart {
   getItemCount: () => number;
   getTotal: () => number;
   isInCart: (productId: string) => boolean;
+  getTotalHijabs: () => number;
+  getFreeHijabs: () => number;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -99,7 +101,8 @@ export const useCartStore = create<CartStore>()(
       },
 
       getTotal: () => {
-        return get().items.reduce((sum, item) => {
+        const items = get().items;
+        let total = items.reduce((sum, item) => {
           // Special pricing ONLY for hijabs priced at 13€: 2 for 25€
           if (item.product.category === 'hijabs' && item.product.price === 13) {
             if (item.quantity >= 2) {
@@ -115,6 +118,46 @@ export const useCartStore = create<CartStore>()(
             return sum + (item.product.price * item.quantity);
           }
         }, 0);
+
+        // Apply "3 acheté = 1 offert" promotion for ALL hijabs
+        const freeHijabs = get().getFreeHijabs();
+        
+        if (freeHijabs > 0) {
+          // Calculate average hijab price to subtract from total
+          const hijabItems = items.filter(item => item.product.category === 'hijabs');
+          if (hijabItems.length > 0) {
+            const hijabTotal = hijabItems.reduce((sum, item) => {
+              if (item.product.category === 'hijabs' && item.product.price === 13) {
+                if (item.quantity >= 2) {
+                  const pairs = Math.floor(item.quantity / 2);
+                  const remaining = item.quantity % 2;
+                  return sum + (pairs * 25) + (remaining * 13);
+                } else {
+                  return sum + (item.quantity * 13);
+                }
+              } else {
+                return sum + (item.product.price * item.quantity);
+              }
+            }, 0);
+            const hijabCount = hijabItems.reduce((sum, item) => sum + item.quantity, 0);
+            const averageHijabPrice = hijabTotal / hijabCount;
+            // Subtract the value of free hijabs
+            total -= (freeHijabs * averageHijabPrice);
+          }
+        }
+
+        return Math.max(0, total);
+      },
+
+      getTotalHijabs: () => {
+        return get().items
+          .filter(item => item.product.category === 'hijabs')
+          .reduce((sum, item) => sum + item.quantity, 0);
+      },
+
+      getFreeHijabs: () => {
+        const totalHijabs = get().getTotalHijabs();
+        return Math.floor(totalHijabs / 3);
       },
 
       isInCart: (productId) => {
